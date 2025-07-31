@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FentiBot - Your trusted platform for cryptocurrency trading</title>
+    <title>Lotearn - Your trusted platform for cryptocurrency trading</title>
     <style>
         * {
             margin: 0;
@@ -268,7 +268,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Welcome to Fentibot</h1>
+            <h1>Welcome to Lotearn</h1>
             <p>Your trusted platform for cryptocurrency trading</p>
         </div>
 
