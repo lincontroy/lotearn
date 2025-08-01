@@ -747,274 +747,400 @@
         </div>
     </div>
     <script>
-        // Bot state management - Simple automated system
-        let botState = {
-            isRunning: false,
-            isPaused: false,
-            totalPnL: 0,
-            totalRuns: 0,
-            totalTrades: 0,
-            winningTrades: 0,
-            currentBalance: {{ Auth::user()->wallet_balance }},
-            tradingInterval: null,
-            logInterval: null,
-            consecutiveLosses: 0,
-            marketTrend: 'neutral',
-            winStreak: 0,
-            lossStreak: 0
-        };
+    // Bot state management with enhanced features
+    let botState = {
+        isRunning: false,
+        isPaused: false,
+        totalPnL: 0,
+        totalRuns: 0,
+        totalTrades: 0,
+        winningTrades: 0,
+        currentBalance: {{ Auth::user()->wallet_balance }},
+        tradingInterval: null,
+        logInterval: null,
+        consecutiveLosses: 0,
+        marketTrend: 'neutral',
+        houseEdge: 0.03, // 3% house edge
+        winStreak: 0,
+        lossStreak: 0,
+        overallLosing: false
+    };
 
-        // Trading bot simulation with strict $10-$100 range
-        class TradingBot {
-            constructor() {
-                this.pairs = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'ADAUSDT', 'DOTUSDT'];
-                this.currentPair = this.pairs[0];
-                this.investmentAmount = {{$amount}};
-                this.lastPrice = this.generateRandomPrice();
-                this.minAmount = 10;
-                this.maxAmount = 100;
-                this.baseWinRate = 0.55; // 55% win rate
-            }
-
-            generateRandomPrice(basePrice = 45000) {
-                return basePrice + (Math.random() - 0.5) * 1000;
-            }
-
-            generateRandomAmount(min = 10, max = 100) {
-                return Math.floor(Math.random() * (max - min + 1)) + min;
-            }
-
-            shouldTrade() {
-                // Trade 70% of the time
-                return Math.random() < 0.7;
-            }
-
-            calculateTradeOutcome() {
-                let winProbability = this.baseWinRate;
-                
-                // Slight adjustments based on streaks
-                if (botState.winStreak >= 3) {
-                    winProbability *= 0.9; // Reduce win chance after streak
-                }
-                if (botState.lossStreak >= 2) {
-                    winProbability *= 1.2; // Increase win chance after losses
-                }
-                
-                return Math.random() < Math.max(0.3, Math.min(0.8, winProbability));
-            }
-
-            getCurrentTimestamp() {
-                const now = new Date();
-                return now.toTimeString().split(' ')[0] + '.' + now.getMilliseconds().toString().padStart(3, '0');
-            }
-
-            executeTrade() {
-                if (!this.shouldTrade()) return false;
-
-                const currentPrice = this.generateRandomPrice(this.lastPrice);
-                const tradeType = Math.random() > 0.5 ? 'BUY' : 'SELL';
-                const isWinningTrade = this.calculateTradeOutcome();
-                
-                // Generate amount strictly between $10-$100
-                const amount = this.generateRandomAmount(this.minAmount, this.maxAmount);
-                let pnl;
-                
-                if (isWinningTrade) {
-                    pnl = amount; // Positive profit
-                    botState.winningTrades++;
-                    botState.winStreak++;
-                    botState.lossStreak = 0;
-                } else {
-                    pnl = -amount; // Negative loss
-                    botState.winStreak = 0;
-                    botState.lossStreak++;
-                }
-                
-                // Update statistics
-                botState.totalTrades++;
-                botState.totalPnL += pnl;
-                botState.currentBalance += pnl;
-                
-                // Log the trade
-                const timestamp = this.getCurrentTimestamp();
-                const pnlText = pnl >= 0 ? `+$${pnl.toFixed(2)}` : `-$${Math.abs(pnl).toFixed(2)}`;
-                
-                addLogEntry(timestamp, `${tradeType} ${this.currentPair} at $${currentPrice.toFixed(2)} | P/L: ${pnlText}`, 
-                           pnl >= 0 ? 'success' : 'warning');
-                
-                // Add motivational messages
-                if (pnl >= 80) {
-                    addLogEntry(timestamp, "Excellent trade! Great profit!", 'success');
-                }
-                if (pnl <= -80) {
-                    addLogEntry(timestamp, "Market dip - recovery opportunities ahead", 'info');
-                }
-                if (botState.winStreak >= 3) {
-                    addLogEntry(timestamp, `Win streak! ${botState.winStreak} in a row!`, 'success');
-                }
-                if (botState.lossStreak >= 2) {
-                    addLogEntry(timestamp, "Market adjusting - better opportunities coming", 'info');
-                }
-                
-                // Update database and UI
-                this.updateWalletBalance(botState.currentBalance);
-                this.updateStats();
-                this.lastPrice = currentPrice;
-                
-                return true;
-            }
-
-            updateWalletBalance(newBalance) {
-                fetch('/api/update-wallet-balance', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({
-                        balance: newBalance
-                    })
-                }).catch(error => console.error('Error updating balance:', error));
-            }
-
-            updateStats() {
-                document.getElementById('totalPnL').textContent = 
-                    (botState.totalPnL >= 0 ? '+' : '') + '$' + Math.abs(botState.totalPnL).toFixed(2);
-                document.getElementById('totalPnL').className = 
-                    'stat-value ' + (botState.totalPnL >= 0 ? 'positive' : 'negative');
-                
-                document.getElementById('totalTrades').textContent = botState.totalTrades;
-                document.getElementById('currentBalance').textContent = 
-                    '$' + botState.currentBalance.toFixed(2);
-                
-                const winRate = botState.totalTrades > 0 ? 
-                    (botState.winningTrades / botState.totalTrades * 100).toFixed(1) : 0;
-                document.getElementById('winRate').textContent = winRate + '%';
-                
-                // Mobile updates
-                document.getElementById('mobileBalance').textContent = 
-                    '$' + botState.currentBalance.toFixed(2);
-                const changeText = (botState.totalPnL >= 0 ? '+' : '') + '$' + Math.abs(botState.totalPnL).toFixed(2);
-                document.getElementById('mobileBalanceChange').textContent = changeText;
-                document.getElementById('mobileBalanceChange').className = 
-                    'balance-change ' + (botState.totalPnL >= 0 ? 'positive' : 'negative');
-            }
-
-            analyzeMarket() {
-                const timestamp = this.getCurrentTimestamp();
-                const analyses = [
-                    `Market analysis: All trades set to start`,
-                    `Technical indicators show balanced trading opportunities`,
-                    `Current strategy: Automated profit/loss within safe limits`,
-                    `Investment management: Controlled risk per trade`,
-                    `Market conditions: Stable trading with fixed ranges`,
-                    `Risk management: Maximum profit/loss per trade active`
-                ];
-                addLogEntry(timestamp, analyses[Math.floor(Math.random() * analyses.length)], 'info');
-            }
-        }
-
-        const tradingBot = new TradingBot();
-
-        function addLogEntry(timestamp, message, type = 'info') {
-            const logsContainer = document.getElementById('logsContainer');
-            const logEntry = document.createElement('div');
-            logEntry.className = `log-entry log-${type}`;
-            logEntry.innerHTML = `<span class="log-timestamp">[${timestamp}]</span> <span class="log-${type}">${message}</span>`;
-            logsContainer.appendChild(logEntry);
-            logsContainer.scrollTop = logsContainer.scrollHeight;
-            document.getElementById('logsCount').textContent = `${logsContainer.children.length} entries`;
-        }
-
-        function startBot() {
-            botState.isRunning = true;
-            botState.isPaused = false;
-            botState.totalRuns++;
+    // Enhanced Trading Bot with investment tiers and smart recovery
+    class TradingBot {
+        constructor() {
+            this.pairs = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'ADAUSDT', 'DOTUSDT'];
+            this.currentPair = this.pairs[0];
+            this.investmentAmount = {{$amount}};
+            this.lastPrice = this.generateRandomPrice();
+            this.priceHistory = [this.lastPrice];
+            this.macdHistory = [];
+            this.minInvestment = 10;
             
-            document.getElementById('totalRuns').textContent = botState.totalRuns;
-            updateBotStatus('running', 'Running');
-            
-            document.getElementById('startBtn').disabled = true;
-            document.getElementById('pauseBtn').disabled = false;
-            document.getElementById('stopBtn').disabled = false;
-            
-            const timestamp = tradingBot.getCurrentTimestamp();
-            addLogEntry(timestamp, 'Trading Bot started successfully', 'success');
-            addLogEntry(timestamp, 'All trades will be executed from now', 'info');
-            
-            // Automated trading interval (every 5-15 seconds)
-            botState.tradingInterval = setInterval(() => {
-                if (botState.isRunning && !botState.isPaused) {
-                    tradingBot.executeTrade();
-                }
-            }, Math.random() * 10000 + 5000);
-            
-            // Market analysis interval
-            botState.logInterval = setInterval(() => {
-                if (botState.isRunning && !botState.isPaused) {
-                    tradingBot.analyzeMarket();
-                }
-            }, Math.random() * 15000 + 10000);
-        }
-
-        function pauseBot() {
-            botState.isPaused = !botState.isPaused;
-            const pauseBtn = document.getElementById('pauseBtn');
-            if (botState.isPaused) {
-                updateBotStatus('paused', 'Paused');
-                pauseBtn.textContent = 'Resume Bot';
-                addLogEntry(tradingBot.getCurrentTimestamp(), 'Trading paused', 'warning');
+            // Set tier based on investment amount
+            if (this.investmentAmount >= 1000) {
+                this.tier = 'premium';
+                this.baseWinRate = 0.75;
+                this.profitRange = { min: 60, max: 100 };
+                this.lossRange = { min: 10, max: 40 };
+            } else if (this.investmentAmount >= 500) {
+                this.tier = 'advanced';
+                this.baseWinRate = 0.70;
+                this.profitRange = { min: 55, max: 90 };
+                this.lossRange = { min: 15, max: 50 };
+            } else if (this.investmentAmount >= 100) {
+                this.tier = 'standard';
+                this.baseWinRate = 0.65;
+                this.profitRange = { min: 50, max: 80 };
+                this.lossRange = { min: 20, max: 60 };
             } else {
-                updateBotStatus('running', 'Running');
-                pauseBtn.textContent = 'Pause Bot';
-                addLogEntry(tradingBot.getCurrentTimestamp(), 'Trading resumed', 'success');
+                this.tier = 'basic';
+                this.baseWinRate = 0.60;
+                this.profitRange = { min: 45, max: 70 };
+                this.lossRange = { min: 25, max: 70 };
             }
-        }
-
-        function stopBot() {
-            if (confirm('Stop the trading bot?')) {
-                botState.isRunning = false;
-                botState.isPaused = false;
-                clearInterval(botState.tradingInterval);
-                clearInterval(botState.logInterval);
-                updateBotStatus('stopped', 'Stopped');
-                
-                document.getElementById('startBtn').disabled = false;
-                document.getElementById('pauseBtn').disabled = true;
-                document.getElementById('stopBtn').disabled = true;
-                
-                const finalStats = `Results: ${botState.totalTrades} trades | ${botState.winningTrades} wins (${(botState.winningTrades/botState.totalTrades*100).toFixed(1)}% win rate)`;
-                addLogEntry(tradingBot.getCurrentTimestamp(), 'Trading bot stopped', 'warning');
-                addLogEntry(tradingBot.getCurrentTimestamp(), finalStats, 'info');
-            }
-        }
-
-        function updateBotStatus(status, text) {
-            const statusBadge = document.getElementById('statusBadge');
-            const statusDot = document.getElementById('statusDot');
-            const statusText = document.getElementById('statusText');
-            statusBadge.className = `status-badge ${status}`;
-            statusDot.className = `status-dot ${status}`;
-            statusText.textContent = text;
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            @if(Auth::user()->wallet_balance >= $amount)
-                document.getElementById('startBtn').addEventListener('click', startBot);
-                document.getElementById('pauseBtn').addEventListener('click', pauseBot);
-                document.getElementById('stopBtn').addEventListener('click', stopBot);
-                updateBotStatus('stopped', 'Ready to Start');
-            @endif
             
-            const timestamp = tradingBot.getCurrentTimestamp();
-            addLogEntry(timestamp, 'Trading Bot initialized', 'success');
-            addLogEntry(timestamp, `Investment amount: $${tradingBot.investmentAmount} | Trade range: $10-$100`, 'info');
-            addLogEntry(timestamp, `Current balance: $${botState.currentBalance.toFixed(2)}`, 'info');
-            @if(Auth::user()->wallet_balance < $amount)
-                addLogEntry(timestamp, 'Insufficient balance to start trading', 'error');
-            @endif
-        });
-    </script>
+            this.maxProfit = this.profitRange.max;
+        }
+
+        generateRandomPrice(basePrice = 45000) {
+            return basePrice + (Math.random() - 0.5) * 1000;
+        }
+
+        updateMarketTrend() {
+            // Slightly bullish bias for higher tiers
+            const trendRandom = Math.random();
+            let bullishProb = 0.5;
+            
+            if (this.tier === 'premium') bullishProb = 0.6;
+            else if (this.tier === 'advanced') bullishProb = 0.55;
+            
+            if (trendRandom < bullishProb) {
+                botState.marketTrend = 'bullish';
+            } else if (trendRandom < 0.85) {
+                botState.marketTrend = 'neutral';
+            } else {
+                botState.marketTrend = 'bearish';
+            }
+        }
+
+        calculateMACD() {
+            // More accurate signals for higher tiers
+            let baseMacd = (Math.random() - 0.3) * 2;
+            let baseSignal = (Math.random() - 0.3) * 2;
+            
+            // Tier-based accuracy boost
+            if (this.tier === 'premium') {
+                baseMacd += 0.4;
+                baseSignal += 0.3;
+            } else if (this.tier === 'advanced') {
+                baseMacd += 0.3;
+                baseSignal += 0.2;
+            }
+            
+            if (botState.marketTrend === 'bullish') {
+                baseMacd += 0.3;
+                baseSignal += 0.2;
+            } else if (botState.marketTrend === 'bearish') {
+                baseMacd -= 0.2;
+                baseSignal -= 0.1;
+            }
+
+            return {
+                macd: baseMacd,
+                signal: baseSignal,
+                histogram: baseMacd - baseSignal
+            };
+        }
+
+        shouldTrade() {
+            if (botState.currentBalance < this.minInvestment) {
+                return false;
+            }
+            
+            // Higher probability for higher tiers
+            let baseProbability = 0.7;
+            if (this.tier === 'premium') baseProbability = 0.8;
+            else if (this.tier === 'advanced') baseProbability = 0.75;
+            
+            // Recovery boost after losses
+            if (botState.lossStreak >= 2) {
+                baseProbability += 0.15;
+            }
+            
+            return Math.random() < Math.min(0.9, baseProbability);
+        }
+
+        calculateDynamicWinRate() {
+            let winRate = this.baseWinRate;
+            
+            // Smart Recovery System
+            if (botState.lossStreak >= 2) winRate += 0.15; // +15% after 2 losses
+            if (botState.lossStreak >= 3) winRate += 0.10; // Additional +10% after 3 losses
+            if (botState.overallLosing) winRate += 0.20;   // +20% when user is losing overall
+            if (botState.winStreak >= 4) winRate -= 0.05;  // -5% after 4 wins
+            
+            // Keep within reasonable bounds
+            return Math.max(0.55, Math.min(0.85, winRate));
+        }
+
+        calculateWinAmount() {
+            // Tier-based profit calculation
+            return Math.floor(Math.random() * (this.profitRange.max - this.profitRange.min + 1)) + this.profitRange.min;
+        }
+
+        calculateLossAmount() {
+            // Tier-based loss calculation (always smaller than potential win)
+            return Math.floor(Math.random() * (this.lossRange.max - this.lossRange.min + 1)) + this.lossRange.min;
+        }
+
+        executeTrade() {
+            if (!this.shouldTrade()) return false;
+
+            // Update market trend (less frequent changes)
+            if (Math.random() < 0.1) {
+                this.updateMarketTrend();
+            }
+
+            const macd = this.calculateMACD();
+            const isBuy = macd.histogram > 0;
+            const currentPrice = this.generateRandomPrice(this.lastPrice);
+            const winProbability = this.calculateDynamicWinRate();
+            const isWinningTrade = Math.random() < winProbability;
+            
+            let pnl;
+            if (isWinningTrade) {
+                pnl = this.calculateWinAmount();
+                botState.consecutiveLosses = 0;
+                botState.winStreak++;
+                botState.lossStreak = 0;
+                
+                // Small bonus for consecutive wins
+                if (botState.winStreak >= 3) {
+                    pnl *= 1.1; // 10% bonus on win streaks
+                }
+            } else {
+                pnl = -this.calculateLossAmount();
+                botState.consecutiveLosses++;
+                botState.winStreak = 0;
+                botState.lossStreak++;
+                
+                // Reduce losses after multiple losses
+                if (botState.lossStreak >= 3) {
+                    pnl *= 0.8; // 20% smaller losses
+                }
+            }
+
+            // Apply house edge
+            const houseCut = Math.abs(pnl) * botState.houseEdge;
+            pnl = pnl > 0 ? pnl - houseCut : pnl + houseCut;
+
+            // Update overall losing state
+            if (botState.totalPnL + pnl < 0) {
+                botState.overallLosing = true;
+            } else {
+                botState.overallLosing = false;
+            }
+
+            // Update statistics
+            botState.totalTrades++;
+            botState.totalPnL += pnl;
+            botState.currentBalance += pnl;
+            
+            if (pnl > 0) {
+                botState.winningTrades++;
+            }
+
+            // Enhanced logging with tier info
+            const timestamp = this.getCurrentTimestamp();
+            const tradeType = isBuy ? 'BUY' : 'SELL';
+            const pnlText = pnl >= 0 ? `+$${pnl.toFixed(2)}` : `-$${Math.abs(pnl).toFixed(2)}`;
+            
+            addLogEntry(timestamp, 
+                `${this.tier.toUpperCase()} ${tradeType} ${this.currentPair} at $${currentPrice.toFixed(2)} | P/L: ${pnlText} | Win%: ${(winProbability*100).toFixed(1)}`, 
+                pnl >= 0 ? 'success' : 'warning');
+            
+            // Add motivational messages
+            if (pnl >= (this.profitRange.max * 0.9)) {
+                addLogEntry(timestamp, "Excellent trade! Premium strategy working!", 'success');
+            }
+            if (botState.winStreak >= 3) {
+                addLogEntry(timestamp, `Win streak! ${botState.winStreak} in a row!`, 'success');
+            }
+            if (botState.lossStreak >= 2) {
+                addLogEntry(timestamp, "Recovery mode activated - increased win probability", 'info');
+            }
+            if (botState.overallLosing) {
+                addLogEntry(timestamp, "Aggressive recovery strategy engaged", 'info');
+            }
+            
+            // Update database and UI
+            this.updateWalletBalance(botState.currentBalance);
+            this.updateStats();
+            
+            this.lastPrice = currentPrice;
+            return true;
+        }
+
+        // [Rest of the methods remain the same as previous implementation]
+        updateWalletBalance(newBalance) {
+            fetch('/api/update-wallet-balance', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    balance: newBalance
+                })
+            }).catch(error => console.error('Error updating balance:', error));
+        }
+
+        updateStats() {
+            document.getElementById('totalPnL').textContent = 
+                (botState.totalPnL >= 0 ? '+' : '') + '$' + Math.abs(botState.totalPnL).toFixed(2);
+            document.getElementById('totalPnL').className = 
+                'stat-value ' + (botState.totalPnL >= 0 ? 'positive' : 'negative');
+            
+            document.getElementById('totalTrades').textContent = botState.totalTrades;
+            document.getElementById('currentBalance').textContent = 
+                '$' + botState.currentBalance.toFixed(2);
+            
+            const winRate = botState.totalTrades > 0 ? 
+                (botState.winningTrades / botState.totalTrades * 100).toFixed(1) : 0;
+            document.getElementById('winRate').textContent = winRate + '%';
+            
+            // Mobile updates
+            document.getElementById('mobileBalance').textContent = 
+                '$' + botState.currentBalance.toFixed(2);
+            const changeText = (botState.totalPnL >= 0 ? '+' : '') + '$' + Math.abs(botState.totalPnL).toFixed(2);
+            document.getElementById('mobileBalanceChange').textContent = changeText;
+            document.getElementById('mobileBalanceChange').className = 
+                'balance-change ' + (botState.totalPnL >= 0 ? 'positive' : 'negative');
+            
+            // Display current tier
+            document.getElementById('currentTier').textContent = 
+                this.tier.toUpperCase() + ' TIER';
+        }
+
+        getCurrentTimestamp() {
+            const now = new Date();
+            return now.toTimeString().split(' ')[0] + '.' + now.getMilliseconds().toString().padStart(3, '0');
+        }
+
+        analyzeMarket() {
+            const timestamp = this.getCurrentTimestamp();
+            const analyses = [
+                `${this.tier.toUpperCase()} strategy analysis: Strong signals`,
+                `Market conditions favorable for ${this.tier} tier`,
+                `Technical indicators show high-probability setups`,
+                `Current ${this.tier} strategy performing optimally`,
+                `Premium algorithms detecting profitable opportunities`
+            ];
+            addLogEntry(timestamp, analyses[Math.floor(Math.random() * analyses.length)], 'info');
+        }
+    }
+
+    // [Rest of the JavaScript code remains the same]
+    const tradingBot = new TradingBot();
+
+    function addLogEntry(timestamp, message, type = 'info') {
+        const logsContainer = document.getElementById('logsContainer');
+        const logEntry = document.createElement('div');
+        logEntry.className = `log-entry log-${type}`;
+        logEntry.innerHTML = `<span class="log-timestamp">[${timestamp}]</span> <span class="log-${type}">${message}</span>`;
+        logsContainer.appendChild(logEntry);
+        logsContainer.scrollTop = logsContainer.scrollHeight;
+        document.getElementById('logsCount').textContent = `${logsContainer.children.length} entries`;
+    }
+
+    function startBot() {
+        botState.isRunning = true;
+        botState.isPaused = false;
+        botState.totalRuns++;
+        
+        document.getElementById('totalRuns').textContent = botState.totalRuns;
+        updateBotStatus('running', 'Running');
+        
+        document.getElementById('startBtn').disabled = true;
+        document.getElementById('pauseBtn').disabled = false;
+        document.getElementById('stopBtn').disabled = false;
+        
+        const timestamp = tradingBot.getCurrentTimestamp();
+        addLogEntry(timestamp, `${tradingBot.tier.toUpperCase()} Trading Bot started`, 'success');
+        addLogEntry(timestamp, `Initializing ${tradingBot.tier} trading strategy`, 'success');
+        
+        botState.tradingInterval = setInterval(() => {
+            if (botState.isRunning && !botState.isPaused) {
+                tradingBot.executeTrade();
+            }
+        }, Math.random() * 10000 + 5000); // 5-15 sec intervals
+        
+        botState.logInterval = setInterval(() => {
+            if (botState.isRunning && !botState.isPaused) {
+                tradingBot.analyzeMarket();
+            }
+        }, Math.random() * 8000 + 4000);
+    }
+
+    function pauseBot() {
+        botState.isPaused = !botState.isPaused;
+        const pauseBtn = document.getElementById('pauseBtn');
+        if (botState.isPaused) {
+            updateBotStatus('paused', 'Paused');
+            pauseBtn.textContent = 'Resume Bot';
+            addLogEntry(tradingBot.getCurrentTimestamp(), 'Trading paused', 'warning');
+        } else {
+            updateBotStatus('running', 'Running');
+            pauseBtn.textContent = 'Pause Bot';
+            addLogEntry(tradingBot.getCurrentTimestamp(), 'Trading resumed', 'success');
+        }
+    }
+
+    function stopBot() {
+        if (confirm('Stop the trading bot?')) {
+            botState.isRunning = false;
+            botState.isPaused = false;
+            clearInterval(botState.tradingInterval);
+            clearInterval(botState.logInterval);
+            updateBotStatus('stopped', 'Stopped');
+            
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = true;
+            
+            const finalStats = `Results: ${botState.totalTrades} trades | ${botState.winningTrades} wins (${(botState.winningTrades/botState.totalTrades*100).toFixed(1)}% win rate)`;
+            addLogEntry(tradingBot.getCurrentTimestamp(), 'Trading bot stopped', 'warning');
+            addLogEntry(tradingBot.getCurrentTimestamp(), finalStats, 'info');
+        }
+    }
+
+    function updateBotStatus(status, text) {
+        const statusBadge = document.getElementById('statusBadge');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        statusBadge.className = `status-badge ${status}`;
+        statusDot.className = `status-dot ${status}`;
+        statusText.textContent = text;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        @if(Auth::user()->wallet_balance >= $amount)
+            document.getElementById('startBtn').addEventListener('click', startBot);
+            document.getElementById('pauseBtn').addEventListener('click', pauseBot);
+            document.getElementById('stopBtn').addEventListener('click', stopBot);
+            updateBotStatus('stopped', 'Ready to Start');
+        @endif
+        
+        const timestamp = tradingBot.getCurrentTimestamp();
+        addLogEntry(timestamp, `${tradingBot.tier.toUpperCase()} Trading Bot initialized`, 'success');
+        addLogEntry(timestamp, `Current balance: $${botState.currentBalance.toFixed(2)}`, 'info');
+        addLogEntry(timestamp, `Active strategy: ${tradingBot.tier.toUpperCase()} (${tradingBot.baseWinRate*100}% base win rate)`, 'info');
+        @if(Auth::user()->wallet_balance < $amount)
+            addLogEntry(timestamp, 'Insufficient balance to start trading', 'error');
+        @endif
+    });
+</script>
     <!-- CSRF Token for AJAX requests -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </body>
