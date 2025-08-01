@@ -15,6 +15,9 @@ Route::post('/mpesa-stk-push', [PaymentController::class, 'mpesaStkPush']);
     Route::get('/mpesa-status/{checkoutRequestId}', [PaymentController::class, 'mpesaStatus']);
 // Payment routes
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/withdrawals', [WithdrawalController::class, 'index']);
+        Route::get('/withdrawals/{withdrawal}', [WithdrawalController::class, 'show']);
+   
     // Card payments
     // Route::post('/process-card-payment', [PaymentController::class, 'processCardPayment']);
     

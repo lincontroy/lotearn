@@ -5,6 +5,7 @@ use App\Http\Controllers\DepositsController;
 use App\Http\Controllers\BotsController;
 use App\Http\Controllers\MarketsController;
 use App\Http\Controllers\WalletController;
+use App\Http\Controllers\WithdrawalController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaymentController;
 
@@ -27,6 +28,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/bt-2', [MarketsController::class, 'bt2'])->name('running2');
     Route::get('/bots', [BotsController::class, 'index'])->name('bots.create');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/withdraw', function () {
+        return view('withdraw');
+    })->name('withdraw');
+    
     Route::post('/withdraw/crypto', [WithdrawalController::class, 'cryptoWithdrawal']);
     Route::post('/withdraw/bank', [WithdrawalController::class, 'bankWithdrawal']);
     Route::post('/withdraw/mpesa', [WithdrawalController::class, 'mpesaWithdrawal']);

@@ -14,7 +14,7 @@
             <div class="portfolio-change">↗ 1.41%</div>
             <div class="portfolio-actions">
             <button class="btn-deposit" onclick="location.href='/deposit'">Deposit</button>
-                <button class="btn-withdraw">Withdraw</button>
+                <button class="btn-withdraw" onclick="location.href='/withdraw'">Withdraw</button>
             </div>
         </section>
 

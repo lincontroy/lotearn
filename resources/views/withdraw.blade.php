@@ -178,7 +178,6 @@
             color: white;
             font-size: 1.1rem;
             outline: none;
-            margin-bottom: 1rem;
         }
 
         .wallet-input:focus {
@@ -242,9 +241,9 @@
             width: 100%;
             height: 50px;
             border-radius: 12px;
-            background: #4ade80;
+            background: #4f46e5;
             border: none;
-            color: #0a0f1c;
+            color: white;
             font-size: 1.2rem;
             cursor: pointer;
             transition: all 0.2s;
@@ -252,7 +251,7 @@
         }
 
         .withdraw-btn:hover {
-            background: #22c55e;
+            background: #4338ca;
             transform: translateY(-1px);
         }
 
@@ -294,8 +293,8 @@
         }
 
         .balance-info {
-            background: #1e3a8a;
-            border-radius: 12px;
+            background: linear-gradient(135deg, #1e3a8a, #3730a3);
+            border-radius: 16px;
             padding: 1.5rem;
             margin-bottom: 2rem;
             text-align: center;
@@ -308,7 +307,7 @@
         }
 
         .balance-label {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #9ca3af;
         }
 
@@ -375,16 +374,16 @@
                 
                 <div class="amount-section">
                     <div class="amount-label">Amount (USD)</div>
-                    <input type="number" class="amount-input" id="crypto-amount" placeholder="100" value="100" min="10" max="{{ auth()->user()->wallet_balance }}">
+                    <input type="number" class="amount-input" id="crypto-amount" placeholder="100" min="10">
                 </div>
                 
                 <div class="wallet-section">
-                    <div class="wallet-label">Your {{ auth()->user()->default_crypto ?? 'Bitcoin' }} Wallet Address</div>
-                    <input type="text" class="wallet-input" id="crypto-wallet" placeholder="1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa" value="{{ auth()->user()->crypto_wallet ?? '' }}">
+                    <div class="wallet-label">Your Wallet Address</div>
+                    <input type="text" class="wallet-input" id="crypto-wallet" placeholder="1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa">
                 </div>
                 
-                <div id="crypto-messages"></div>
                 <button class="withdraw-btn" id="crypto-withdraw-btn" onclick="processCryptoWithdrawal()">Withdraw</button>
+                <div id="crypto-messages"></div>
             </div>
             
             <!-- Bank withdrawal form -->
@@ -392,22 +391,23 @@
                 <div id="bank-messages"></div>
                 <div class="amount-section">
                     <div class="amount-label">Amount (USD)</div>
-                    <input type="number" class="amount-input" id="bank-amount" placeholder="100" value="100" min="10" max="{{ auth()->user()->wallet_balance }}">
+                    <input type="number" class="amount-input" id="bank-amount" placeholder="100" min="10">
                 </div>
                 
                 <div class="bank-details">
                     <div class="bank-label">Bank Name</div>
-                    <input type="text" class="bank-input" id="bank-name" placeholder="e.g. Chase Bank" value="{{ auth()->user()->bank_name ?? '' }}">
+                    <input type="text" class="bank-input" id="bank-name" placeholder="e.g. Chase Bank">
                     
                     <div class="bank-label">Account Number</div>
-                    <input type="text" class="bank-input" id="bank-account" placeholder="123456789" value="{{ auth()->user()->bank_account ?? '' }}">
+                    <input type="text" class="bank-input" id="bank-account" placeholder="1234567890">
                     
                     <div class="bank-label">Account Holder Name</div>
-                    <input type="text" class="bank-input" id="bank-holder" placeholder="John Doe" value="{{ auth()->user()->name }}">
+                    <input type="text" class="bank-input" id="bank-holder" placeholder="John Doe">
                     
-                    <div class="bank-label">SWIFT/IBAN Code</div>
-                    <input type="text" class="bank-input" id="bank-swift" placeholder="CHASUS33" value="{{ auth()->user()->bank_swift ?? '' }}">
+                    <div class="bank-label">SWIFT Code (Optional)</div>
+                    <input type="text" class="bank-input" id="bank-swift" placeholder="CHASUS33">
                 </div>
+                
                 <button class="withdraw-btn" id="bank-withdraw-btn" onclick="processBankWithdrawal()">Withdraw</button>
             </div>
             
@@ -415,23 +415,23 @@
             <div id="mpesa-withdrawal-form" style="display: none;">
                 <div id="mpesa-messages"></div>
                 <div class="amount-section">
-                    <div class="amount-label">Amount (KES)</div>
-                    <input type="number" class="amount-input" id="mpesa-amount" placeholder="1000" value="1000" min="100" max="{{ auth()->user()->wallet_balance * 100 }}">
+                    <div class="amount-label">Amount (USD)</div>
+                    <input type="number" class="amount-input" id="mpesa-amount" placeholder="10000" min="100">
                 </div>
                 
                 <div class="mpesa-details">
                     <div class="mpesa-label">Phone Number</div>
-                    <input type="text" class="mpesa-input" id="mpesa-phone" placeholder="254712345678" maxlength="12" value="{{ auth()->user()->phone ?? '' }}">
+                    <input type="text" class="mpesa-input" id="mpesa-phone" placeholder="254712345678" maxlength="12">
                 </div>
+                
                 <button class="withdraw-btn" id="mpesa-withdraw-btn" onclick="processMpesaWithdrawal()">Withdraw</button>
             </div>
         </div>
     </main>
 
     <script>
-        // Current selected crypto method
         let selectedCrypto = 'bitcoin';
-        
+
         function selectCrypto(element, cryptoType) {
             // Remove selected class from all options
             document.querySelectorAll('.crypto-option').forEach(option => {
@@ -444,16 +444,12 @@
             
             // Update wallet placeholder based on crypto type
             const walletInput = document.getElementById('crypto-wallet');
-            switch(cryptoType) {
-                case 'bitcoin':
-                    walletInput.placeholder = '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa';
-                    break;
-                case 'usdt':
-                    walletInput.placeholder = 'TQn9Y2khEsLJW1ChVTQQugS4TnxaHm6Ft5';
-                    break;
-                case 'ethereum':
-                    walletInput.placeholder = '0x71C7656EC7ab88b098defB751B7401B5f6d8976F';
-                    break;
+            if (cryptoType === 'bitcoin') {
+                walletInput.placeholder = '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa';
+            } else if (cryptoType === 'usdt') {
+                walletInput.placeholder = 'TQn9Y2khEsLJW1ChVTQQugS4TnxaHm6Ft5';
+            } else if (cryptoType === 'ethereum') {
+                walletInput.placeholder = '0x71C7656EC7ab88b098defB751B7401B5f6d8976F';
             }
         }
 
@@ -465,20 +461,10 @@
             }, 5000);
         }
 
-        // Phone number formatting for M-Pesa
-        document.getElementById('mpesa-phone').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/[^0-9]/g, '');
-            if (value.startsWith('0')) {
-                value = '254' + value.substring(1);
-            }
-            e.target.value = value;
-        });
-
         async function processCryptoWithdrawal() {
-            const amount = parseFloat(document.getElementById('crypto-amount').value);
-            const walletAddress = document.getElementById('crypto-wallet').value.trim();
+            const amount = document.getElementById('crypto-amount').value;
+            const walletAddress = document.getElementById('crypto-wallet').value;
             const withdrawBtn = document.getElementById('crypto-withdraw-btn');
-            const balance = parseFloat("{{ auth()->user()->wallet_balance }}");
 
             // Validation
             if (!amount || !walletAddress) {
@@ -491,24 +477,8 @@
                 return;
             }
 
-            if (amount > balance) {
-                showMessage('crypto-messages', 'Insufficient balance', 'error');
-                return;
-            }
-
-            // Basic wallet validation
-            if (selectedCrypto === 'bitcoin' && !/^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(walletAddress)) {
-                showMessage('crypto-messages', 'Please enter a valid Bitcoin address', 'error');
-                return;
-            }
-
-            if (selectedCrypto === 'usdt' && !/^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(walletAddress)) {
-                showMessage('crypto-messages', 'Please enter a valid USDT (TRC20) address', 'error');
-                return;
-            }
-
-            if (selectedCrypto === 'ethereum' && !/^0x[a-fA-F0-9]{40}$/.test(walletAddress)) {
-                showMessage('crypto-messages', 'Please enter a valid Ethereum address', 'error');
+            if (walletAddress.length < 10) {
+                showMessage('crypto-messages', 'Please enter a valid wallet address', 'error');
                 return;
             }
 
@@ -521,7 +491,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
                     body: JSON.stringify({
                         crypto_type: selectedCrypto,
@@ -535,9 +505,10 @@
                 if (response.ok) {
                     showMessage('crypto-messages', 'Withdrawal request submitted successfully!', 'success');
                     // Update balance display
-                    document.querySelector('.balance-amount').textContent = '$' + (balance - amount).toFixed(2);
-                    // Reset form
-                    document.getElementById('crypto-amount').value = '100';
+                    document.querySelector('.balance-amount').textContent = '$' + result.new_balance;
+                    // Clear form
+                    document.getElementById('crypto-amount').value = '';
+                    document.getElementById('crypto-wallet').value = '';
                 } else {
                     showMessage('crypto-messages', result.message || 'Withdrawal failed. Please try again.', 'error');
                 }
@@ -551,17 +522,15 @@
         }
 
         async function processBankWithdrawal() {
-            const amount = parseFloat(document.getElementById('bank-amount').value);
-            const bankName = document.getElementById('bank-name').value.trim();
-            const accountNumber = document.getElementById('bank-account').value.trim();
-            const accountHolder = document.getElementById('bank-holder').value.trim();
-            const swiftCode = document.getElementById('bank-swift').value.trim();
+            const amount = document.getElementById('bank-amount').value;
+            const bankName = document.getElementById('bank-name').value;
+            const accountNumber = document.getElementById('bank-account').value;
+            const accountHolder = document.getElementById('bank-holder').value;
             const withdrawBtn = document.getElementById('bank-withdraw-btn');
-            const balance = parseFloat("{{ auth()->user()->wallet_balance }}");
 
             // Validation
             if (!amount || !bankName || !accountNumber || !accountHolder) {
-                showMessage('bank-messages', 'Please fill in all required fields', 'error');
+                showMessage('bank-messages', 'Please fill in all bank details', 'error');
                 return;
             }
 
@@ -570,8 +539,8 @@
                 return;
             }
 
-            if (amount > balance) {
-                showMessage('bank-messages', 'Insufficient balance', 'error');
+            if (accountNumber.length < 5) {
+                showMessage('bank-messages', 'Please enter a valid account number', 'error');
                 return;
             }
 
@@ -584,25 +553,29 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
                     body: JSON.stringify({
                         amount: amount,
                         bank_name: bankName,
                         account_number: accountNumber,
                         account_holder: accountHolder,
-                        swift_code: swiftCode
+                        swift_code: document.getElementById('bank-swift').value
                     })
                 });
 
                 const result = await response.json();
 
                 if (response.ok) {
-                    showMessage('bank-messages', 'Bank withdrawal request submitted! Processing may take 2-3 business days.', 'success');
+                    showMessage('bank-messages', 'Bank withdrawal request submitted!', 'success');
                     // Update balance display
-                    document.querySelector('.balance-amount').textContent = '$' + (balance - amount).toFixed(2);
-                    // Reset form
-                    document.getElementById('bank-amount').value = '100';
+                    document.querySelector('.balance-amount').textContent = '$' + result.new_balance;
+                    // Clear form
+                    document.getElementById('bank-amount').value = '';
+                    document.getElementById('bank-name').value = '';
+                    document.getElementById('bank-account').value = '';
+                    document.getElementById('bank-holder').value = '';
+                    document.getElementById('bank-swift').value = '';
                 } else {
                     showMessage('bank-messages', result.message || 'Withdrawal failed. Please try again.', 'error');
                 }
@@ -616,11 +589,9 @@
         }
 
         async function processMpesaWithdrawal() {
-            const amount = parseFloat(document.getElementById('mpesa-amount').value);
-            const phone = document.getElementById('mpesa-phone').value.trim();
+            const amount = document.getElementById('mpesa-amount').value;
+            const phone = document.getElementById('mpesa-phone').value;
             const withdrawBtn = document.getElementById('mpesa-withdraw-btn');
-            const balance = parseFloat("{{ auth()->user()->wallet_balance }}");
-            const maxKesAmount = balance * 100; // Assuming $1 = 100 KES
 
             // Validation
             if (!amount || !phone) {
@@ -629,12 +600,7 @@
             }
 
             if (amount < 100) {
-                showMessage('mpesa-messages', 'Minimum withdrawal is KES 100', 'error');
-                return;
-            }
-
-            if (amount > maxKesAmount) {
-                showMessage('mpesa-messages', 'Insufficient balance', 'error');
+                showMessage('mpesa-messages', 'Minimum withdrawal is USD 100', 'error');
                 return;
             }
 
@@ -652,7 +618,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
                     body: JSON.stringify({
                         amount: amount,
@@ -663,12 +629,12 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    showMessage('mpesa-messages', 'M-Pesa withdrawal initiated! Funds should arrive within minutes.', 'success');
-                    // Update balance display (convert KES back to USD for display)
-                    const usdDeduction = amount / 100;
-                    document.querySelector('.balance-amount').textContent = '$' + (balance - usdDeduction).toFixed(2);
-                    // Reset form
-                    document.getElementById('mpesa-amount').value = '1000';
+                    showMessage('mpesa-messages', 'M-Pesa withdrawal initiated!', 'success');
+                    // Update balance display
+                    document.querySelector('.balance-amount').textContent = '$' + result.new_balance;
+                    // Clear form
+                    document.getElementById('mpesa-amount').value = '';
+                    document.getElementById('mpesa-phone').value = '';
                 } else {
                     showMessage('mpesa-messages', result.message || 'Withdrawal failed. Please try again.', 'error');
                 }
@@ -680,6 +646,15 @@
                 withdrawBtn.innerHTML = 'Withdraw';
             }
         }
+
+        // Phone number formatting for M-Pesa
+        document.getElementById('mpesa-phone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^0-9]/g, '');
+            if (value.startsWith('0')) {
+                value = '254' + value.substring(1);
+            }
+            e.target.value = value;
+        });
 
         // Tab switching functionality
         document.querySelectorAll('.method-tab').forEach(tab => {
@@ -706,4 +681,5 @@
         // Initialize with Bitcoin selected
         selectCrypto(document.querySelector('.crypto-option.selected'), 'bitcoin');
     </script>
+     <meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
