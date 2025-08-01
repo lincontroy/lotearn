@@ -151,7 +151,7 @@ class PaymentController extends Controller
                     'PartyA' => $request->phone,
                     'PartyB' => $shortcode,
                     'PhoneNumber' => $request->phone,
-                    'CallBackURL' => 'https://Lotearn.com/api/callback',
+                    'CallBackURL' => 'https://lotearn.com/api/callback',
                     'AccountReference' => 'DEPOSIT-' . auth()->id(),
                     'TransactionDesc' => 'Account Deposit'
                 ]);

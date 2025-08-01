@@ -747,7 +747,7 @@
         </div>
     </div>
     <script>
-        // Bot state management - Updated for better client profits
+        // Bot state management - Simple automated system
         let botState = {
             isRunning: false,
             isPaused: false,
@@ -760,181 +760,110 @@
             logInterval: null,
             consecutiveLosses: 0,
             marketTrend: 'neutral',
-            houseEdge: 0.05, // Reduced house edge to 5%
             winStreak: 0,
             lossStreak: 0
         };
 
-        // Trading bot simulation with client-friendly profits
+        // Trading bot simulation with strict $10-$100 range
         class TradingBot {
             constructor() {
                 this.pairs = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'ADAUSDT', 'DOTUSDT'];
                 this.currentPair = this.pairs[0];
                 this.investmentAmount = {{$amount}};
                 this.lastPrice = this.generateRandomPrice();
-                this.priceHistory = [this.lastPrice];
-                this.macdHistory = [];
-                this.baseWinRate = 0.60; // Increased to 60% win rate
-                this.minInvestment = 10; // Minimum investment amount
+                this.minAmount = 10;
+                this.maxAmount = 100;
+                this.baseWinRate = 0.55; // 55% win rate
             }
 
             generateRandomPrice(basePrice = 45000) {
                 return basePrice + (Math.random() - 0.5) * 1000;
             }
 
-            updateMarketTrend() {
-                // More bullish trends for better profits
-                const trendRandom = Math.random();
-                if (trendRandom < 0.6) { // 60% chance bullish
-                    botState.marketTrend = 'bullish';
-                } else if (trendRandom < 0.85) {
-                    botState.marketTrend = 'neutral';
-                } else {
-                    botState.marketTrend = 'bearish';
-                }
-            }
-
-            calculateMACD() {
-                // More optimistic MACD signals
-                let baseMacd = (Math.random() - 0.3) * 2; // Bias towards positive
-                let baseSignal = (Math.random() - 0.3) * 2;
-                
-                if (botState.marketTrend === 'bullish') {
-                    baseMacd += 0.4;
-                    baseSignal += 0.3;
-                } else if (botState.marketTrend === 'bearish') {
-                    baseMacd -= 0.2; // Smaller bearish impact
-                    baseSignal -= 0.1;
-                }
-
-                return {
-                    macd: baseMacd,
-                    signal: baseSignal,
-                    histogram: baseMacd - baseSignal
-                };
+            generateRandomAmount(min = 10, max = 100) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
             }
 
             shouldTrade() {
-                // More frequent trading opportunities
-                if (botState.currentBalance < this.minInvestment) {
-                    return false;
-                }
-                
-                // Higher probability after losses to recover
-                if (botState.lossStreak >= 2) {
-                    return Math.random() < 0.85;
-                }
-                
-                // Normally high trade probability
-                return Math.random() < 0.75;
+                // Trade 70% of the time
+                return Math.random() < 0.7;
             }
 
             calculateTradeOutcome() {
                 let winProbability = this.baseWinRate;
                 
-                // Dynamic probability adjustment
+                // Slight adjustments based on streaks
                 if (botState.winStreak >= 3) {
-                    winProbability *= 0.9; // Small reduction after wins
+                    winProbability *= 0.9; // Reduce win chance after streak
                 }
                 if (botState.lossStreak >= 2) {
-                    winProbability *= 1.4; // Bigger boost after losses
+                    winProbability *= 1.2; // Increase win chance after losses
                 }
                 
-                // Keep within reasonable bounds
-                return Math.random() < Math.max(0.45, Math.min(0.75, winProbability));
+                return Math.random() < Math.max(0.3, Math.min(0.8, winProbability));
             }
 
-            calculateWinAmount() {
-                // Profits between $80-$350
-                const minWin = 80;
-                const maxWin = 350;
-                return Math.floor(Math.random() * (maxWin - minWin + 1)) + minWin;
-            }
-
-            calculateLossAmount() {
-                // Smaller losses between $50-$250
-                const minLoss = 50;
-                const maxLoss = 250;
-                return Math.floor(Math.random() * (maxLoss - minLoss + 1)) + minLoss;
+            getCurrentTimestamp() {
+                const now = new Date();
+                return now.toTimeString().split(' ')[0] + '.' + now.getMilliseconds().toString().padStart(3, '0');
             }
 
             executeTrade() {
                 if (!this.shouldTrade()) return false;
 
-                // Update market trend (less frequent changes)
-                if (Math.random() < 0.1) {
-                    this.updateMarketTrend();
-                }
-
-                const macd = this.calculateMACD();
-                const isBuy = macd.histogram > 0;
                 const currentPrice = this.generateRandomPrice(this.lastPrice);
+                const tradeType = Math.random() > 0.5 ? 'BUY' : 'SELL';
                 const isWinningTrade = this.calculateTradeOutcome();
                 
+                // Generate amount strictly between $10-$100
+                const amount = this.generateRandomAmount(this.minAmount, this.maxAmount);
                 let pnl;
+                
                 if (isWinningTrade) {
-                    pnl = this.calculateWinAmount();
-                    botState.consecutiveLosses = 0;
+                    pnl = amount; // Positive profit
+                    botState.winningTrades++;
                     botState.winStreak++;
                     botState.lossStreak = 0;
-                    
-                    // Add bonus for consecutive wins
-                    if (botState.winStreak >= 3) {
-                        pnl *= 1.2; // 20% bonus on win streaks
-                    }
                 } else {
-                    pnl = -this.calculateLossAmount();
-                    botState.consecutiveLosses++;
+                    pnl = -amount; // Negative loss
                     botState.winStreak = 0;
                     botState.lossStreak++;
-                    
-                    // Reduce losses after multiple losses
-                    if (botState.lossStreak >= 3) {
-                        pnl *= 0.7; // 30% smaller losses
-                    }
                 }
-
-                // Apply smaller house edge
-                const houseCut = Math.abs(pnl) * botState.houseEdge;
-                pnl = pnl > 0 ? pnl - houseCut : pnl - houseCut;
-
+                
                 // Update statistics
                 botState.totalTrades++;
                 botState.totalPnL += pnl;
                 botState.currentBalance += pnl;
                 
-                if (pnl > 0) {
-                    botState.winningTrades++;
-                }
-
-                // Enhanced logging
+                // Log the trade
                 const timestamp = this.getCurrentTimestamp();
-                const tradeType = isBuy ? 'BUY' : 'SELL';
                 const pnlText = pnl >= 0 ? `+$${pnl.toFixed(2)}` : `-$${Math.abs(pnl).toFixed(2)}`;
                 
                 addLogEntry(timestamp, `${tradeType} ${this.currentPair} at $${currentPrice.toFixed(2)} | P/L: ${pnlText}`, 
                            pnl >= 0 ? 'success' : 'warning');
                 
                 // Add motivational messages
-                if (pnl >= 200) {
-                    addLogEntry(timestamp, "Great trade! Keep it up!", 'success');
+                if (pnl >= 80) {
+                    addLogEntry(timestamp, "Excellent trade! Great profit!", 'success');
+                }
+                if (pnl <= -80) {
+                    addLogEntry(timestamp, "Market dip - recovery opportunities ahead", 'info');
                 }
                 if (botState.winStreak >= 3) {
                     addLogEntry(timestamp, `Win streak! ${botState.winStreak} in a row!`, 'success');
                 }
                 if (botState.lossStreak >= 2) {
-                    addLogEntry(timestamp, "Market adjusting - good opportunities coming", 'info');
+                    addLogEntry(timestamp, "Market adjusting - better opportunities coming", 'info');
                 }
                 
                 // Update database and UI
                 this.updateWalletBalance(botState.currentBalance);
                 this.updateStats();
-                
                 this.lastPrice = currentPrice;
+                
                 return true;
             }
 
-            // [Rest of the methods remain the same as previous implementation]
             updateWalletBalance(newBalance) {
                 fetch('/api/update-wallet-balance', {
                     method: 'POST',
@@ -971,26 +900,20 @@
                     'balance-change ' + (botState.totalPnL >= 0 ? 'positive' : 'negative');
             }
 
-            getCurrentTimestamp() {
-                const now = new Date();
-                return now.toTimeString().split(' ')[0] + '.' + now.getMilliseconds().toString().padStart(3, '0');
-            }
-
             analyzeMarket() {
                 const timestamp = this.getCurrentTimestamp();
                 const analyses = [
-                    `Market trend: ${botState.marketTrend} | Favorable conditions`,
-                    `Technical indicators show strong potential`,
-                    `Market volatility at optimal levels for trading`,
-                    `Liquidity is high - good execution prices`,
-                    `Current strategy performing well`,
-                    `Multiple profitable setups detected`
+                    `Market analysis: All trades set to start`,
+                    `Technical indicators show balanced trading opportunities`,
+                    `Current strategy: Automated profit/loss within safe limits`,
+                    `Investment management: Controlled risk per trade`,
+                    `Market conditions: Stable trading with fixed ranges`,
+                    `Risk management: Maximum profit/loss per trade active`
                 ];
                 addLogEntry(timestamp, analyses[Math.floor(Math.random() * analyses.length)], 'info');
             }
         }
 
-        // [Rest of the JavaScript code (log management, bot controls, etc.) remains the same]
         const tradingBot = new TradingBot();
 
         function addLogEntry(timestamp, message, type = 'info') {
@@ -1016,20 +939,22 @@
             document.getElementById('stopBtn').disabled = false;
             
             const timestamp = tradingBot.getCurrentTimestamp();
-            addLogEntry(timestamp, 'Profit Optimizer Bot started successfully', 'success');
-            addLogEntry(timestamp, 'Initializing high-probability trading strategy', 'success');
+            addLogEntry(timestamp, 'Trading Bot started successfully', 'success');
+            addLogEntry(timestamp, 'All trades will be executed from now', 'info');
             
+            // Automated trading interval (every 5-15 seconds)
             botState.tradingInterval = setInterval(() => {
                 if (botState.isRunning && !botState.isPaused) {
                     tradingBot.executeTrade();
                 }
-            }, Math.random() * 10000 + 5000); // 5-15 sec intervals
+            }, Math.random() * 10000 + 5000);
             
+            // Market analysis interval
             botState.logInterval = setInterval(() => {
                 if (botState.isRunning && !botState.isPaused) {
                     tradingBot.analyzeMarket();
                 }
-            }, Math.random() * 8000 + 4000);
+            }, Math.random() * 15000 + 10000);
         }
 
         function pauseBot() {
@@ -1082,7 +1007,8 @@
             @endif
             
             const timestamp = tradingBot.getCurrentTimestamp();
-            addLogEntry(timestamp, 'Profit Optimizer Bot initialized', 'success');
+            addLogEntry(timestamp, 'Trading Bot initialized', 'success');
+            addLogEntry(timestamp, `Investment amount: $${tradingBot.investmentAmount} | Trade range: $10-$100`, 'info');
             addLogEntry(timestamp, `Current balance: $${botState.currentBalance.toFixed(2)}`, 'info');
             @if(Auth::user()->wallet_balance < $amount)
                 addLogEntry(timestamp, 'Insufficient balance to start trading', 'error');
