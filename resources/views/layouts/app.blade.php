@@ -211,11 +211,7 @@
             <a href="#" class="nav-item" onclick="event.preventDefault(); confirmLogout();">🚪 Logout</a>
         </nav>
         
-        <div class="user-section">
-            <div class="balance">💰 $0.00</div>
-            <div class="user-menu">🔧 Accounts ▼</div>
-            <div class="user-avatar">👤</div>
-        </div>
+      
     </header>
 
     <!-- Mobile Menu -->
@@ -255,10 +251,10 @@
                 <span class="nav-badge">1</span>
             </a>
             
-            <a href="#" class="bottom-nav-item" data-page="account">
+            <a href="/profile" class="bottom-nav-item" data-page="account">
                 <div class="bottom-nav-icon">👤</div>
-                <span class="bottom-nav-label">Account</span>
-                <div class="bottom-nav-balance">$0.00</div>
+                <span class="bottom-nav-label">Profile</span>
+               
             </a>
         </div>
     </nav>

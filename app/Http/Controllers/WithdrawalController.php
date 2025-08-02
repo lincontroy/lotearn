@@ -102,7 +102,7 @@ class WithdrawalController extends Controller
 
         return DB::transaction(function () use ($request) {
             $user = auth()->user();
-            $usdAmount = $request->amount / 100; // Assuming 100 KES = 1 USD
+            $usdAmount = $request->amount; // Assuming 100 KES = 1 USD
             
             if ($user->wallet_balance < $usdAmount) {
                 return response()->json(['message' => 'Insufficient balance'], 400);

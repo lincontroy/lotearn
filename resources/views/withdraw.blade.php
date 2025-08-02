@@ -505,10 +505,14 @@
                 if (response.ok) {
                     showMessage('crypto-messages', 'Withdrawal request submitted successfully!', 'success');
                     // Update balance display
-                    document.querySelector('.balance-amount').textContent = '$' + result.new_balance;
+                    // document.querySelector('.balance-amount').textContent = '$' + result.new_balance;
                     // Clear form
                     document.getElementById('crypto-amount').value = '';
                     document.getElementById('crypto-wallet').value = '';
+
+                    window.location.reload();
+
+
                 } else {
                     showMessage('crypto-messages', result.message || 'Withdrawal failed. Please try again.', 'error');
                 }
@@ -631,10 +635,11 @@
                 if (response.ok) {
                     showMessage('mpesa-messages', 'M-Pesa withdrawal initiated!', 'success');
                     // Update balance display
-                    document.querySelector('.balance-amount').textContent = '$' + result.new_balance;
+                    // document.querySelector('.balance-amount').textContent = '$' + result.new_balance;
                     // Clear form
                     document.getElementById('mpesa-amount').value = '';
                     document.getElementById('mpesa-phone').value = '';
+                    window.location.reload();
                 } else {
                     showMessage('mpesa-messages', result.message || 'Withdrawal failed. Please try again.', 'error');
                 }

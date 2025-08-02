@@ -21,7 +21,7 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::get('/deposit', [DepositsController::class, 'index'])->name('deposit.create');
     Route::get('/markets', [MarketsController::class, 'index'])->name('markets.create');
     Route::get('/bt-1', [MarketsController::class, 'bt1'])->name('running');
