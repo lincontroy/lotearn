@@ -344,9 +344,13 @@
                         title: 'Account Options',
                         html: `
                             <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
-                                <button onclick="showProfile()" class="swal2-styled" style="background: #4ade80;">Profile Settings</button>
-                                <button onclick="showBalance()" class="swal2-styled" style="background: #3b82f6;">Balance Details</button>
-                                <button onclick="confirmLogout()" class="swal2-styled" style="background: #ef4444;">Logout</button>
+                               <button onclick="window.location.href='/profile'" class="swal2-styled" style="background: #4ade80; color: white;">
+    Profile Settings
+</button>
+
+                                <button onclick="window.location.href='/dashboard'" class="swal2-styled" style="background: #3b82f6; color: white;">Balance Details</button>
+<button onclick="confirmLogout()" class="swal2-styled" style="background: #ef4444; color: white;">Logout</button>
+
                             </div>
                         `,
                         showConfirmButton: false,
