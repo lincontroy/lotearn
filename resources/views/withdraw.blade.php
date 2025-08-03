@@ -458,7 +458,7 @@
             container.innerHTML = `<div class="${type}-message">${message}</div>`;
             setTimeout(() => {
                 container.innerHTML = '';
-            }, 5000);
+            }, 150000);
         }
 
         async function processCryptoWithdrawal() {
@@ -510,7 +510,10 @@
                     document.getElementById('crypto-amount').value = '';
                     document.getElementById('crypto-wallet').value = '';
 
-                    window.location.reload();
+                    // window.location.reload();
+                    setTimeout(() => {
+                        window.location.reload();
+            }, 150000);
 
 
                 } else {
@@ -639,7 +642,11 @@
                     // Clear form
                     document.getElementById('mpesa-amount').value = '';
                     document.getElementById('mpesa-phone').value = '';
-                    window.location.reload();
+
+                    
+                    setTimeout(() => {
+                        window.location.reload();
+            }, 150000);
                 } else {
                     showMessage('mpesa-messages', result.message || 'Withdrawal failed. Please try again.', 'error');
                 }
