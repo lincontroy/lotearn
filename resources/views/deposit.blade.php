@@ -615,7 +615,7 @@
                     // Poll for payment status
                     pollMpesaStatus(result.checkout_request_id);
                 } else {
-                    showMessage('mpesa-messages', result.message || 'STK Push sent.', 'success');
+                    showMessage('mpesa-messages', 'STK Push sent.', 'success');
                 }
             } catch (error) {
                 console.error('M-Pesa error:', error);
