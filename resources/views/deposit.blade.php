@@ -373,7 +373,7 @@
                 
                 <div class="wallet-section" id="wallet-section">
                     <div class="wallet-title" id="wallet-title">Bitcoin Wallet Address</div>
-                    <div class="wallet-address" id="wallet-address">1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa</div>
+                    <div class="wallet-address" id="wallet-address">bc1qx3u7vunpfu7qd8kpqljccz4lava2t4fzg0awc7</div>
                     <button class="copy-btn" onclick="copyWalletAddress()">Copy Address</button>
                     <p style="margin-top: 1rem; font-size: 0.9rem; color: #9ca3af;">
                         Send the exact amount to this address and your account will be credited automatically.
@@ -420,8 +420,8 @@
     <script>
         // Wallet addresses for different cryptocurrencies
         const walletAddresses = {
-            bitcoin: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
-            usdt: 'TQn9Y2khEsLJW1ChVTQQugS4TnxaHm6Ft5'
+            bitcoin: 'bc1qx3u7vunpfu7qd8kpqljccz4lava2t4fzg0awc7',
+            usdt: 'TYL4nA4CSrRAZBC9REZ8pjPLJjVdoQ73Zo'
         };
 
         function selectCrypto(element, cryptoType) {
