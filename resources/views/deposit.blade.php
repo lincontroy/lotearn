@@ -406,7 +406,7 @@
                 <div id="mpesa-messages"></div>
                 <div class="amount-section">
                     <div class="amount-label">Amount (KES)</div>
-                    <input type="number" class="amount-input" id="mpesa-amount" placeholder="2800" value="2800" min="3499">
+                    <input type="number" class="amount-input" id="mpesa-amount" placeholder="2800" value="3499" min="3499">
                 </div>
                 <div class="mpesa-details">
                     <div class="mpesa-label">Phone Number</div>
