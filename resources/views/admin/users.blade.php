@@ -15,19 +15,7 @@
             <i class="fas fa-users mr-2"></i>
             Users Management
         </h1>
-        <div class="btn-group">
-            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addUserModal">
-                <i class="fas fa-plus mr-1"></i> Add New User
-            </button>
-            <button type="button" class="btn btn-info btn-sm dropdown-toggle dropdown-toggle-split" data-toggle="dropdown">
-                <i class="fas fa-download mr-1"></i> Export
-            </button>
-            <div class="dropdown-menu">
-                <a class="dropdown-item" href="#"><i class="fas fa-file-pdf mr-2"></i>PDF</a>
-                <a class="dropdown-item" href="#"><i class="fas fa-file-excel mr-2"></i>Excel</a>
-                <a class="dropdown-item" href="#"><i class="fas fa-file-csv mr-2"></i>CSV</a>
-            </div>
-        </div>
+        
     </div>
 @stop
 
