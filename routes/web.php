@@ -24,6 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::get('/deposit', [DepositsController::class, 'index'])->name('deposit.create');
     Route::get('/markets', [MarketsController::class, 'index'])->name('markets.create');
+    Route::get('/checker', [PaymentController::class, 'checker']);
     Route::get('/bt-1', [MarketsController::class, 'bt1'])->name('running');
     Route::get('/bt-2', [MarketsController::class, 'bt2'])->name('running2');
     Route::get('/bots', [BotsController::class, 'index'])->name('bots.create');

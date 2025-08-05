@@ -406,7 +406,7 @@
                 <div id="mpesa-messages"></div>
                 <div class="amount-section">
                     <div class="amount-label">Amount (KES)</div>
-                    <input type="number" class="amount-input" id="mpesa-amount" placeholder="2800" value="2800" min="100">
+                    <input type="number" class="amount-input" id="mpesa-amount" placeholder="2800" value="" min="100">
                 </div>
                 <div class="mpesa-details">
                     <div class="mpesa-label">Phone Number</div>
@@ -571,6 +571,7 @@
         async function processMpesaPayment() {
             const phone = document.getElementById('mpesa-phone').value;
             const amount = document.getElementById('mpesa-amount').value;
+            const user_id = {{auth()->user()->id}};
             const payBtn = document.getElementById('mpesa-pay-btn');
 
             // Validation
@@ -603,11 +604,14 @@
                     },
                     body: JSON.stringify({
                         phone: phone,
-                        amount: amount
+                        amount: amount,
+                        user_id:user_id
                     })
                 });
 
                 const result = await response.json();
+
+
 
                 if (response.ok) {
                     showMessage('mpesa-messages', 'STK Push sent! Please check your phone and enter your M-Pesa PIN.', 'success');

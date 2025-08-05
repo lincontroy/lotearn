@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-
+use App\Models\MpesaStk;
+use App\Models\User;
 class PaymentController extends Controller
 {
     /**
@@ -161,7 +162,7 @@ class PaymentController extends Controller
             if ($response->successful() && $responseData['ResponseCode'] === '0') {
                 // Store STK push request
                 $stkId = DB::table('mpesa_stk_requests')->insertGetId([
-                    'user_id' => auth()->id(),
+                    'user_id' => $request->user_id,
                     'phone' => $request->phone,
                     'amount' => $request->amount,
                     'checkout_request_id' => $responseData['CheckoutRequestID'],
@@ -192,6 +193,150 @@ class PaymentController extends Controller
             ], 500);
         }
     }
+
+    public function checker(){
+        
+        //check the checkoutrequestid that that have a status of 0
+        
+        $requests = MpesaStk::where('status', 'pending')
+             ->whereNotNull('checkout_request_id')
+             ->get();
+             
+             
+             foreach($requests as $request){
+                 
+                 //get the checkout request id
+                 $requestId=$request->checkout_request_id;
+                 
+                 //get the access token using curl
+                 
+                 $accessToken=$this->getAccesstoken();
+                 
+                $curl = curl_init();
+                
+                $headers = [
+                    'Authorization: Bearer ' . $accessToken,
+                    'Content-Type: application/json',
+                ];
+                
+                $shortcode  = "4070303";
+                $passkey    = "7954b40292233647350b701e5686c152f8c21a891dcfe644f629d1ccf250168f";
+                $timestamp  = now()->format('YmdHis');
+                $password   = base64_encode($shortcode . $passkey . $timestamp);
+                
+                $payload = json_encode([
+                    'BusinessShortCode'   => $shortcode,
+                    'Password'            => $password,
+                    'Timestamp'           => $timestamp,
+                    'CheckoutRequestID'   => $requestId,
+                ]);
+                
+                curl_setopt_array($curl, [
+                    CURLOPT_URL => 'https://api.safaricom.co.ke/mpesa/stkpushquery/v1/query',
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_POST => true,
+                    CURLOPT_POSTFIELDS => $payload,
+                    CURLOPT_HTTPHEADER => $headers,
+                ]);
+                
+                $response = curl_exec($curl);
+                
+                if (curl_errno($curl)) {
+                    $error_msg = curl_error($curl);
+                    // Handle error as needed
+                    echo "cURL Error: $error_msg";
+                }
+                
+                curl_close($curl);
+                
+                // Decode response JSON to array
+                $responseData = json_decode($response, true);
+                
+                if (isset($responseData['ResultCode']) && $responseData['ResultCode'] == 0 && $responseData['CheckoutRequestID'] == $requestId) {
+                    
+                    //update the users status
+                    //get the user with that request id
+
+                    $user_fetcher=MpesaStk::where('checkout_request_id',$requestId)->get();
+
+                    $user_id=$user_fetcher->user_id;
+
+                    $amount=$user_fetcher->amount;
+
+                    $user=User::where('id',$user_id)->first();
+
+                    //in kes
+                    $user_balance=$user->wallet_balance;
+
+                    $amount = $user_fetcher->amount; // e.g. amount in KES
+                    $fromCurrency = 'KES';
+                    $toCurrency = 'USD';
+
+                    // API endpoint
+                    $url = "https://api.exchangerate.host/convert?from={$fromCurrency}&to={$toCurrency}&amount={$amount}";
+
+                    // Make HTTP request
+                    $response = file_get_contents($url);
+                    $data = json_decode($response, true);
+
+                    // Get converted amount
+                    if (isset($data['result'])) {
+                        $convertedAmount = $data['result'];
+
+                        $new_balance=$user_balance+$convertedAmount;
+
+                        $updated->update(['wallet_balance'=>$new_balance]);
+
+
+                        echo "KES $amount = USD $convertedAmount";
+                    } else {
+                        echo "Currency conversion failed.";
+                    }
+
+                    //update the user balance
+
+                    
+
+
+
+                    
+                    
+                  //  dd($responseData);
+                    
+                    $user->update(['status'=>1]);
+                    echo "Success! Receipt: " . $responseData['CheckoutRequestID'];
+                } else {
+                    echo "Transaction not successful: " . ($responseData['ResultDesc'] ?? 'Unknown error');
+                }
+                
+                    
+                 
+                 
+             }
+                
+                
+    }
+    
+    public function getAccesstoken(){
+        $consumer_key="NeqHYS98NGGibVdg1kSJ0QkL6TTQeA4r";
+        $consumer_secret="CYnFOaAGlb0Ao2XY";
+        
+        $headers=['Content-Type:application/json; charset-utf8'];
+          $url = 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
+          $curl = curl_init( $url);
+          curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+          curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+          curl_setopt($curl, CURLOPT_HEADER, false);
+          curl_setopt($curl, CURLOPT_USERPWD, $consumer_key.':'.$consumer_secret);
+         $result=curl_exec($curl);
+         $status=curl_getinfo($curl, CURLINFO_HTTP_CODE);
+         $result=json_decode($result);
+        $access_token= $result->access_token;
+        
+        
+        return $result;
+    }
+
 
     /**
      * Check M-Pesa payment status
