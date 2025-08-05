@@ -285,6 +285,7 @@ class PaymentController extends Controller
 
                         $new_balance=$user_balance+$convertedAmount;
 
+                        $user->update(['wallet_balance'=>$new_balance]);
                         $updated->update(['wallet_balance'=>$new_balance]);
 
 
