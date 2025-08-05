@@ -211,7 +211,13 @@ class PaymentController extends Controller
                  //get the access token using curl
                  
                  $accessToken=$this->getAccesstoken();
+
+                 $accessToken=$accessToken->access_token;
+
+
                  
+
+                //  return $accessToken;
                 $curl = curl_init();
                 
                 $headers = [
