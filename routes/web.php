@@ -5,6 +5,8 @@ use App\Http\Controllers\DepositsController;
 use App\Http\Controllers\BotsController;
 use App\Http\Controllers\MarketsController;
 use App\Http\Controllers\WalletController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\WithdrawalController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaymentController;
@@ -20,8 +22,8 @@ Route::get('/checker', [PaymentController::class, 'checker']);
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/users', [UserController::class, 'index'])->name('users.index');
-    Route::post('/users/{user}/add-balance', [UserController::class, 'addBalance'])->name('users.addBalance');
+    Route::get('admin/users', [UserController::class, 'index'])->name('admin.users');
+    Route::post('/users/{user}/add-balance', [UserController::class, 'addBalance'])->name('admin.users.update-balance');
 });
 
 // Route::post('api/process-card-payment', [PaymentController::class, 'processCardPayment']);

@@ -10,7 +10,7 @@ use App\Models\MpesaStk;
 
 use Illuminate\Http\Request;
 
-class AdminDashboardController extends Controller
+class DashboardController extends Controller
 {
     //
 

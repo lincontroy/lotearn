@@ -315,29 +315,25 @@ return [
             'type' => 'sidebar-menu-search',
             'text' => 'search',
         ],
-        [
-            'text' => 'blog',
-            'url' => 'admin/blog',
-            'can' => 'manage-blog',
-        ],
-        [
-            'text' => 'pages',
-            'url' => 'admin/pages',
-            'icon' => 'far fa-fw fa-file',
-            'label' => 4,
-            'label_color' => 'success',
-        ],
-        ['header' => 'account_settings'],
-        [
-            'text' => 'profile',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-user',
-        ],
-        [
-            'text' => 'change_password',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-lock',
-        ],
+        
+        
+
+    [
+        'text' => 'Dashboard',
+        'url' => 'admin',
+        'icon' => 'fas fa-fw fa-tachometer-alt',
+        'label' => 4,
+        'label_color' => 'success',
+    ],
+    [
+        'text' => 'Users',
+        'url' => 'admin/users',
+        'icon' => 'fas fa-fw fa-users',
+        'label' => 4,
+        'label_color' => 'success',
+    ],
+
+        
         [
             'text' => 'multilevel',
             'icon' => 'fas fa-fw fa-share',

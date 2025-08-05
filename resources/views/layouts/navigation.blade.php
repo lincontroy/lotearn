@@ -10,12 +10,24 @@
                     </a>
                 </div>
 
+               
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+
+                    <!-- ✅ Admin Dashboard -->
+                    <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
+                        {{ __('Admin Dashboard') }}
+                    </x-nav-link>
+
+                    <!-- ✅ Users -->
+                    <x-nav-link :href="route('admin.users')" :active="request()->routeIs('admin.users')">
+                        {{ __('Users') }}
+                    </x-nav-link>
                 </div>
+
             </div>
 
             <!-- Settings Dropdown -->
