@@ -18,9 +18,17 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('/checker', [PaymentController::class, 'checker']);
 
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::post('/users/{user}/add-balance', [UserController::class, 'addBalance'])->name('users.addBalance');
+});
+
 // Route::post('api/process-card-payment', [PaymentController::class, 'processCardPayment']);
 
 Route::middleware('auth')->group(function () {
+
+  
 
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::get('/deposit', [DepositsController::class, 'index'])->name('deposit.create');
