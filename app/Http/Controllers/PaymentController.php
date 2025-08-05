@@ -265,7 +265,7 @@ class PaymentController extends Controller
                     //update the users status
                     //get the user with that request id
 
-                    $user_fetcher=MpesaStk::where('checkout_request_id',$requestId)->get();
+                    $user_fetcher=MpesaStk::where('checkout_request_id',$requestId)->first();
 
                     $user_id=$user_fetcher->user_id;
 
@@ -294,26 +294,13 @@ class PaymentController extends Controller
                         $new_balance=$user_balance+$convertedAmount;
 
                         $user->update(['wallet_balance'=>$new_balance]);
-                        $updated->update(['wallet_balance'=>$new_balance]);
+                        $user_fetcher->update(['status'=>'success']);
 
 
                         echo "KES $amount = USD $convertedAmount";
                     } else {
                         echo "Currency conversion failed.";
                     }
-
-                    //update the user balance
-
-                    
-
-
-
-                    
-                    
-                  //  dd($responseData);
-                    
-                    $user->update(['status'=>1]);
-                    echo "Success! Receipt: " . $responseData['CheckoutRequestID'];
                 } else {
                     echo "Transaction not successful: " . ($responseData['ResultDesc'] ?? 'Unknown error');
                 }            
