@@ -214,6 +214,8 @@ class PaymentController extends Controller
 
                  $accessToken=$accessToken->access_token;
 
+                //  return $accessToken;
+
 
                  
 
@@ -314,14 +316,9 @@ class PaymentController extends Controller
                     echo "Success! Receipt: " . $responseData['CheckoutRequestID'];
                 } else {
                     echo "Transaction not successful: " . ($responseData['ResultDesc'] ?? 'Unknown error');
-                }
-                
-                    
+                }            
                  
-                 
-             }
-                
-                
+             }              
     }
     
     public function getAccesstoken(){
