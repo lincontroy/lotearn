@@ -281,15 +281,16 @@ class PaymentController extends Controller
                     $toCurrency = 'USD';
 
                     // API endpoint
-                    $url = "https://api.exchangerate.host/convert?from={$fromCurrency}&to={$toCurrency}&amount={$amount}";
+                    // $url = "https://api.exchangerate.host/convert?from={$fromCurrency}&to={$toCurrency}&amount={$amount}";
 
-                    // Make HTTP request
-                    $response = file_get_contents($url);
-                    $data = json_decode($response, true);
+                    // // echo $url;
+                    // // Make HTTP request
+                    // $response = file_get_contents($url);
+                    // $data = json_decode($response, true);
 
                     // Get converted amount
-                    if (isset($data['result'])) {
-                        $convertedAmount = $data['result'];
+                    if (true) {
+                        $convertedAmount = round($amount / 129, 2);
 
                         $new_balance=$user_balance+$convertedAmount;
 
