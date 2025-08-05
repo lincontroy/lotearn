@@ -1,7 +1,7 @@
 @php
     $totalUsers = App\Models\User::count();
-    $activeUsers = App\Models\User::where('status', 'active')->count();
-    $totalBalance = App\Models\User::sum('balance');
+    
+    $totalBalance = App\Models\User::sum('wallet_balance');
     $newUsers = App\Models\User::where('created_at', '>=', now()->subDays(30))->count();
 @endphp
 
@@ -46,22 +46,12 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-3 col-md-6">
-        <div class="small-box bg-success">
-            <div class="inner">
-                <h3>{{ $activeUsers }}</h3>
-                <p>Active Users</p>
-            </div>
-            <div class="icon">
-                <i class="fas fa-user-check"></i>
-            </div>
-        </div>
-    </div>
+   
     <div class="col-lg-3 col-md-6">
         <div class="small-box bg-warning">
             <div class="inner">
                 <h3>Usd {{ number_format($totalBalance, 2) }}</h3>
-                <p>Total Balance</p>
+                <p>Total Collected</p>
             </div>
             <div class="icon">
                 <i class="fas fa-coins"></i>
