@@ -342,12 +342,33 @@
         <h1 class="main-title">Fund Your Account</h1>
         <p class="main-subtitle">Choose your preferred deposit method below</p>
         
-        <div class="deposit-form">
-            <div class="method-tabs">
-                <button class="method-tab active" id="crypto-tab">💰 Crypto</button>
-                <button class="method-tab" id="card-tab">💳 Card</button>
+        <div class="method-tabs">
+            <button class="method-tab active" id="crypto-tab">💰 Crypto</button>
+            <button class="method-tab" id="card-tab">💳 Card</button>
+            @if(Auth::check() && Auth::user()->country === 'Kenya')
                 <button class="method-tab" id="mpesa-tab">📱 Mpesa</button>
-            </div>
+            @endif
+        </div>
+        
+        <script>
+        // Alternative JavaScript-based approach if you prefer client-side detection
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get user's country from backend (assuming it's available in a data attribute or global variable)
+            const userCountry = '{{ Auth::check() ? Auth::user()->country : "" }}';
+            
+            // Or detect by timezone/locale (less reliable)
+            // const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            // const isKenya = userTimezone === 'Africa/Nairobi';
+            
+            const mpesaTab = document.getElementById('mpesa-tab');
+            
+            if (userCountry === 'Kenya' || userCountry === 'KE') {
+                mpesaTab.style.display = 'block';
+            } else {
+                mpesaTab.style.display = 'none';
+            }
+        });
+        </script>
             
             <!-- Crypto deposit form -->
             <div id="crypto-deposit-form">
