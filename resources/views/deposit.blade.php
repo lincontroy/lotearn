@@ -368,7 +368,7 @@
                 
                 <div class="amount-section">
                     <div class="amount-label">Amount (USD)</div>
-                    <input type="number" class="amount-input" id="crypto-amount" placeholder="28" value="28" min="10">
+                    <input type="number" class="amount-input" id="crypto-amount" placeholder="49" value="49" min="49">
                 </div>
                 
                 <div class="wallet-section" id="wallet-section">
@@ -386,7 +386,7 @@
                 <div id="card-messages"></div>
                 <div class="amount-section">
                     <div class="amount-label">Amount (USD)</div>
-                    <input type="number" class="amount-input" id="card-amount" placeholder="28" value="28" min="10">
+                    <input type="number" class="amount-input" id="card-amount" placeholder="49" value="49" min="49">
                 </div>
                 <div class="card-details">
                     <div class="card-label">Card Number</div>
@@ -406,7 +406,7 @@
                 <div id="mpesa-messages"></div>
                 <div class="amount-section">
                     <div class="amount-label">Amount (KES)</div>
-                    <input type="number" class="amount-input" id="mpesa-amount" placeholder="2800" value="3499" min="3499">
+                    <input type="number" class="amount-input" id="mpesa-amount" placeholder="6332" value="6332" min="6332">
                 </div>
                 <div class="mpesa-details">
                     <div class="mpesa-label">Phone Number</div>
@@ -648,7 +648,7 @@
                         showMessage('mpesa-messages', 'Payment successful! Your account has been credited.', 'success');
                         // Reset form
                         document.getElementById('mpesa-phone').value = '';
-                        document.getElementById('mpesa-amount').value = '2800';
+                        document.getElementById('mpesa-amount').value = '6332';
                         return;
                     } else if (result.status === 'failed') {
                         showMessage('mpesa-messages', 'Payment failed or was cancelled.', 'error');

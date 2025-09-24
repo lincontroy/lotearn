@@ -17,7 +17,7 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified'])->name('user.dashboard');
 Route::get('/checker', [PaymentController::class, 'checker']);
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
