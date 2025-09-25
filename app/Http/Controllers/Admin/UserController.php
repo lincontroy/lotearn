@@ -24,7 +24,7 @@ class UserController extends Controller
         // dd($request, $user);
         $request->validate(['amount' => 'required|numeric|min:1']);
         if($request->action=='subtract'){
-            $user->wallet_balance = $request->amount;
+            $user->wallet_balance -= $request->amount;
         }else{
             $user->wallet_balance += $request->amount;
         }
