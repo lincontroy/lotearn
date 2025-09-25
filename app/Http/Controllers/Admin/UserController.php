@@ -21,20 +21,18 @@ class UserController extends Controller
 
     public function addBalance(Request $request, User $user)
     {
-        dd($request, $user);
+        // dd($request, $user);
         $request->validate(['amount' => 'required|numeric|min:1']);
-        $user->wallet_balance += $request->amount;
+        if($request->action=='subtract'){
+            $user->wallet_balance = $request->amount;
+        }else{
+            $user->wallet_balance += $request->amount;
+        }
+        
         $user->save();
 
         return redirect()->back()->with('success', 'Balance added successfully.');
     }
 
-    public function deductBalance(Request $request, User $user)
-    {
-        $request->validate(['amount' => 'required|numeric|min:1']);
-        $user->wallet_balance -= $request->amount;
-        $user->save();
-
-        return redirect()->back()->with('success', 'Balance added successfully.');
-    }
+    
 }
