@@ -566,55 +566,7 @@
                         </div>
                     </div>
 
-                    <div class="bot-card">
-                        <div class="bot-header">
-                            <div class="bot-info">
-                                <h3>Multi-Coin DCA</h3>
-                                <p class="bot-frequency">Monthly • DCA</p>
-                            </div>
-                            <div class="bot-status configured">Configured</div>
-                        </div>
-                        <p class="bot-description">DCA into top 5 cryptocurrencies by market cap</p>
-                        <div class="bot-stats">
-                            <div class="bot-stat">
-                                <div class="bot-stat-label">Risk:</div>
-                                <div class="bot-stat-value">Low</div>
-                            </div>
-                            <div class="bot-stat">
-                                <div class="bot-stat-label">Performance:</div>
-                                <div class="bot-stat-value">--</div>
-                            </div>
-                        </div>
-                        <div class="bot-actions">
-                            <button class="bot-btn secondary">Configure</button>
-                            <button class="bot-btn primary">Start Bot</button>
-                        </div>
-                    </div>
-
-                    <div class="bot-card">
-                        <div class="bot-header">
-                            <div class="bot-info">
-                                <h3>Cycle-Based Accumulation</h3>
-                                <p class="bot-frequency">Weekly • DCA</p>
-                            </div>
-                            <div class="bot-status inactive">Inactive</div>
-                        </div>
-                        <p class="bot-description">DCA more during market dips, less during highs</p>
-                        <div class="bot-stats">
-                            <div class="bot-stat">
-                                <div class="bot-stat-label">Risk:</div>
-                                <div class="bot-stat-value">Medium</div>
-                            </div>
-                            <div class="bot-stat">
-                                <div class="bot-stat-label">Performance:</div>
-                                <div class="bot-stat-value">--</div>
-                            </div>
-                        </div>
-                        <div class="bot-actions">
-                            <button class="bot-btn secondary">Configure</button>
-                            <button class="bot-btn primary">Start Bot</button>
-                        </div>
-                    </div>
+                   
                 </div>
             </div>
         </div>

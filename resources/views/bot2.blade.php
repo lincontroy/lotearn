@@ -711,55 +711,7 @@
                         </div>
                     </div>
 
-                    <div class="bot-card" data-bot-id="multi-coin-dca">
-                        <div class="bot-header">
-                            <div>
-                                <h3 class="bot-title">Multi-Coin DCA</h3>
-                                <div class="bot-frequency">Monthly • DCA</div>
-                            </div>
-                            <span class="bot-status status-inactive">Not Configured</span>
-                        </div>
-                        <p class="bot-description">DCA into top 5 cryptocurrencies by market cap</p>
-                        <div class="bot-metrics">
-                            <div class="metric">
-                                <div class="metric-label">Risk:</div>
-                                <div class="metric-value">Medium</div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-label">Performance:</div>
-                                <div class="metric-value">--</div>
-                            </div>
-                        </div>
-                        <div class="bot-actions">
-                            <button class="btn-secondary bot-configure-btn" data-bot-type="multi-coin-dca">Configure</button>
-                            <button class="btn-primary bot-start-btn" data-bot-type="multi-coin-dca" disabled>Start Bot</button>
-                        </div>
-                    </div>
-
-                    <div class="bot-card" data-bot-id="cycle-based">
-                        <div class="bot-header">
-                            <div>
-                                <h3 class="bot-title">Cycle-Based Accumulation</h3>
-                                <div class="bot-frequency">Weekly • DCA</div>
-                            </div>
-                            <span class="bot-status status-inactive">Not Configured</span>
-                        </div>
-                        <p class="bot-description">DCA more during market dips, less during highs</p>
-                        <div class="bot-metrics">
-                            <div class="metric">
-                                <div class="metric-label">Risk:</div>
-                                <div class="metric-value">Low</div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-label">Performance:</div>
-                                <div class="metric-value">--</div>
-                            </div>
-                        </div>
-                        <div class="bot-actions">
-                            <button class="btn-secondary bot-configure-btn" data-bot-type="cycle-based">Configure</button>
-                            <button class="btn-primary bot-start-btn" data-bot-type="cycle-based" disabled>Start Bot</button>
-                        </div>
-                    </div>
+                   
                 </div>
             </div>
         </div>
