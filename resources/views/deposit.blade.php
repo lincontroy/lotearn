@@ -345,9 +345,7 @@
         <div class="method-tabs">
             <button class="method-tab active" id="crypto-tab">💰 Crypto</button>
             <button class="method-tab" id="card-tab">💳 Card</button>
-            @if(Auth::check() && Auth::user()->country === 'Kenya')
-                <button class="method-tab" id="mpesa-tab">📱 Mpesa</button>
-            @endif
+           
         </div>
         
         <script>
