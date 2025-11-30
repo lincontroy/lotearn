@@ -352,7 +352,7 @@
             <div class="method-tabs">
                 <button class="method-tab active" id="crypto-tab">💰 Crypto</button>
                 <button class="method-tab" id="bank-tab">🏦 Bank</button>
-                <button class="method-tab" id="mpesa-tab">📱 Mpesa</button>
+              
             </div>
             
             <!-- Crypto withdrawal form -->
