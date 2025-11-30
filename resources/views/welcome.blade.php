@@ -538,37 +538,56 @@
             with professional-grade TradingView charts and make informed trading decisions.</p>
         </div>
 <!-- TradingView Widget BEGIN -->
-<div class="tradingview-widget-container container mx-auto" style="max-width: 980px;">
-  <div class="tradingview-widget-container__widget"></div>
-  <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/symbols/NASDAQ-AAPL/" rel="noopener nofollow" target="_blank"><span class="blue-text">AAPL stock chart</span></a><span class="trademark"> by TradingView</span></div>
-  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
-  {
-  "allow_symbol_change": true,
-  "calendar": false,
-  "details": false,
-  "hide_side_toolbar": true,
-  "hide_top_toolbar": false,
-  "hide_legend": false,
-  "hide_volume": false,
-  "hotlist": false,
-  "interval": "D",
-  "locale": "en",
-  "save_image": true,
-  "style": "1",
-  "symbol": "NASDAQ:AAPL",
-  "theme": "dark",
-  "timezone": "Etc/UTC",
-  "backgroundColor": "#0F0F0F",
-  "gridColor": "rgba(242, 242, 242, 0.06)",
-  "watchlist": [],
-  "withdateranges": false,
-  "compareSymbols": [],
-  "studies": [],
-  "width": 980,
-  "height": 610
-}
-  </script>
+<style>
+  /* Responsive container */
+  .tv-wrapper {
+      width: 100%;
+      max-width: 100%;
+      height: 70vh; /* Adjust height for screens */
+      min-height: 400px;
+  }
+
+  @media (max-width: 768px) {
+      .tv-wrapper {
+          height: 60vh; /* Smaller height for mobile */
+          min-height: 300px;
+      }
+  }
+
+  .tradingview-widget-container {
+      width: 100% !important;
+      height: 100% !important;
+  }
+
+  .tradingview-widget-container__widget {
+      width: 100% !important;
+      height: 100% !important;
+  }
+</style>
+
+<div class="tv-wrapper">
+  <div class="tradingview-widget-container">
+      <div class="tradingview-widget-container__widget"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+      {
+          "allow_symbol_change": true,
+          "calendar": false,
+          "details": false,
+          "hide_side_toolbar": true,
+          "interval": "D",
+          "locale": "en",
+          "symbol": "NASDAQ:AAPL",
+          "theme": "dark",
+          "timezone": "Etc/UTC",
+          "backgroundColor": "#0F0F0F",
+          "gridColor": "rgba(242, 242, 242, 0.06)",
+          "width": "100%",
+          "height": "100%"
+      }
+      </script>
+  </div>
 </div>
+
 <!-- TradingView Widget END -->
       </section>
       <section class="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-20">
