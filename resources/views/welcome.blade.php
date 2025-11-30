@@ -243,7 +243,7 @@
                 <span class="text-primary font-medium">Smarter Trading Gateway</span></div>
               <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-foreground">Turn Idle
                 Funds Into Powerful Earning Tools</h1>
-              <p class="text-base md:text-xl text-muted-foreground">Experience hands-free forex trading with
+              <p class="text-base md:text-xl text-muted-foreground">Experience hands-free Crypto trading with
                 cutting-edge automation built for consistent gains.</p>
               <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2 md:pt-4"><a href="/auth"
                   class="inline-flex items-center justify-center whitespace-nowrap font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 hover-elevate active-elevate-2 bg-primary text-primary-foreground border border-primary-border min-h-10 rounded-md gap-2 text-base md:text-lg h-12 md:h-14 px-6 md:px-8"
@@ -485,7 +485,7 @@
               class="inline-block bg-primary/10 border border-primary/20 rounded-full px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm">
               <span class="text-primary font-medium">About Us</span></div>
             <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold">Discover Our Platform — Don't Miss Out</h2>
-            <p class="text-lg md:text-xl text-muted-foreground">Trade smarter with AI-driven forex automation that
+            <p class="text-lg md:text-xl text-muted-foreground">Trade smarter with AI-driven Crypto automation that
               analyzes, executes, and optimizes 24/7.</p>
             <div class="space-y-4 pt-4">
               <div class="flex items-start gap-4">
@@ -498,7 +498,7 @@
                   </svg></div>
                 <div>
                   <h3 class="text-lg font-semibold mb-1">Auto-Trading Services</h3>
-                  <p class="text-muted-foreground">Harness advanced algorithms to automate your forex trades
+                  <p class="text-muted-foreground">Harness advanced algorithms to automate your Crypto trades
                     efficiently.</p>
                 </div>
               </div>
@@ -513,7 +513,7 @@
                   </svg></div>
                 <div>
                   <h3 class="text-lg font-semibold mb-1">Years of Experience</h3>
-                  <p class="text-muted-foreground">Backed by proven results and deep forex market insights since day
+                  <p class="text-muted-foreground">Backed by proven results and deep Crypto market insights since day
                     one.</p>
                 </div>
               </div>
@@ -537,17 +537,39 @@
           <p class="text-base md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">Monitor live market movements
             with professional-grade TradingView charts and make informed trading decisions.</p>
         </div>
-        <div class="w-full overflow-hidden rounded-lg">
-          <div class="rounded-lg overflow-hidden border border-border bg-card">
-            <div id="tradingview_chart">
-              <div id="tradingview_05263-wrapper"
-                style="position: relative; box-sizing: content-box; font-family: -apple-system, BlinkMacSystemFont, &quot;Trebuchet MS&quot;, Roboto, Ubuntu, sans-serif; margin: 0px auto !important; padding: 0px !important; width: 100%; height: 400px;">
-                <iframe title="advanced chart TradingView widget" lang="en" id="tradingview_05263" frameborder="0"
-                  allowtransparency="true" scrolling="no" allowfullscreen="true" src="./apex_files/saved_resource.html"
-                  style="width: 100%; height: 100%; margin: 0px !important; padding: 0px !important;"></iframe></div>
-            </div>
-          </div>
-        </div>
+<!-- TradingView Widget BEGIN -->
+<div class="tradingview-widget-container container mx-auto" style="max-width: 980px;">
+  <div class="tradingview-widget-container__widget"></div>
+  <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/symbols/NASDAQ-AAPL/" rel="noopener nofollow" target="_blank"><span class="blue-text">AAPL stock chart</span></a><span class="trademark"> by TradingView</span></div>
+  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+  {
+  "allow_symbol_change": true,
+  "calendar": false,
+  "details": false,
+  "hide_side_toolbar": true,
+  "hide_top_toolbar": false,
+  "hide_legend": false,
+  "hide_volume": false,
+  "hotlist": false,
+  "interval": "D",
+  "locale": "en",
+  "save_image": true,
+  "style": "1",
+  "symbol": "NASDAQ:AAPL",
+  "theme": "dark",
+  "timezone": "Etc/UTC",
+  "backgroundColor": "#0F0F0F",
+  "gridColor": "rgba(242, 242, 242, 0.06)",
+  "watchlist": [],
+  "withdateranges": false,
+  "compareSymbols": [],
+  "studies": [],
+  "width": 980,
+  "height": 610
+}
+  </script>
+</div>
+<!-- TradingView Widget END -->
       </section>
       <section class="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-20">
         <div class="text-center space-y-3 md:space-y-4 mb-8 md:mb-12">
@@ -555,7 +577,7 @@
             class="inline-block bg-primary/10 border border-primary/20 rounded-full px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm">
             <span class="text-primary font-medium">Premium Trading</span></div>
           <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold">Professional Autotrading Platform</h2>
-          <p class="text-base md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">Our Forex Premium autotrading
+          <p class="text-base md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">Our Crypto Premium autotrading
             section provides real-time, expert-analyzed trading tailored to maximize profit opportunities in the foreign
             exchange market.</p>
         </div>
@@ -602,7 +624,7 @@
             </div>
             <div class="p-4 md:p-6 space-y-2 md:space-y-3">
               <h3 class="text-lg md:text-xl font-bold">24/7 Market Monitoring</h3>
-              <p class="text-sm md:text-base text-muted-foreground">Our systems continuously monitor the forex and
+              <p class="text-sm md:text-base text-muted-foreground">Our systems continuously monitor the Crypto and
                 crypto markets around the clock, ensuring timely entries and exits without manual intervention.</p>
             </div>
           </div>
