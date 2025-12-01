@@ -1,5 +1,8 @@
 @php
     $totalUsers = App\Models\User::count();
+    $users = App\Models\User::orderBy('id', 'desc')->paginate(10);
+
+
     
     $totalBalance = App\Models\User::sum('wallet_balance');
     $newUsers = App\Models\User::where('created_at', '>=', now()->subDays(30))->count();
@@ -89,6 +92,7 @@
                     <th>Avatar</th>
                     <th>Name</th>
                     <th>Email</th>
+                    <th>Country</th>
                     <th>Phone</th>
                     <th>Balance</th>
                     <th>Status</th>
@@ -118,6 +122,7 @@
                         @endif
                     </td>
                     <td>{{ $user->email }}</td>
+                    <td>{{ $user->country ?? 'Not provided' }}</td>
                     <td>{{ $user->phone ?? 'Not provided' }}</td>
                     <td>
                         <span class="badge badge-success badge-lg">

@@ -17,7 +17,7 @@ class UserController extends Controller
               ->orderBy('id', 'asc');
     })->paginate(10);
 
-    return view('admin.users', compact('users'));
+    return view('admin.users');
 }
 
     public function addBalance(Request $request, User $user)
