@@ -1028,8 +1028,8 @@
                 return false;
             }
             
-            if (!amount || amount < 10 || amount > 10000) {
-                showError('Please enter a valid investment amount between $10 and $10,000');
+            if (!amount || amount < 29 || amount > 10000) {
+                showError('Please enter a valid investment amount between $29 and $10,000');
                 return false;
             }
             
