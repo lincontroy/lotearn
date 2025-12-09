@@ -742,9 +742,9 @@
 
                 <div class="form-group">
                     <label class="form-label">Investment Amount per Trade (USD)</label>
-                    <input type="number" class="form-input" id="investmentAmount" min="10" max="10000" step="10" placeholder="100" required>
+                    <input type="number" class="form-input" id="investmentAmount" min="29" max="10000" step="10" placeholder="100" required>
                     <div class="investment-info">
-                        <div class="investment-info-label">Minimum: $10 • Maximum: $10,000</div>
+                        <div class="investment-info-label">Minimum: $29 • Maximum: $10,000</div>
                         <div class="investment-info-value">Enter the amount you want to invest per trade</div>
                     </div>
                 </div>
