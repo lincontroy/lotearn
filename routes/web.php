@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaymentController;
 
 
-exit;
+// exit;
 
 Route::get('/', function () {
     return view('welcome');
