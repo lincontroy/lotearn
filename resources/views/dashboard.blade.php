@@ -572,7 +572,7 @@
         });
         
         // Update portfolio display
-        // document.getElementById('portfolio-balance').textContent = formatCurrency(totalValue);
+        document.getElementById('portfolio-balance').textContent = formatCurrency(totalValue);
         
         if (totalValue > 0) {
             const portfolioChangePercent = (totalChange / totalValue).toFixed(2);
