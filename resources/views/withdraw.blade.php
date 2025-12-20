@@ -311,6 +311,124 @@
             color: #9ca3af;
         }
 
+        /* Pending Withdrawals Styles */
+        .pending-withdrawals {
+            margin-top: 3rem;
+            max-width: 800px;
+            margin: 3rem auto 0;
+        }
+
+        .pending-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .withdrawals-table {
+            width: 100%;
+            background: #1a2332;
+            border-radius: 20px;
+            overflow: hidden;
+            border-collapse: collapse;
+        }
+
+        .withdrawals-table th {
+            background: #0f1419;
+            padding: 1.2rem 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #9ca3af;
+            border-bottom: 2px solid #374151;
+        }
+
+        .withdrawals-table td {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid #374151;
+        }
+
+        .withdrawals-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .withdrawals-table tr:hover {
+            background: #0f1419;
+        }
+
+        .amount-cell {
+            font-weight: 600;
+            color: #4f46e5;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .status-approved {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .status-rejected {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .method-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: rgba(79, 70, 229, 0.2);
+            color: #4f46e5;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #9ca3af;
+            background: #1a2332;
+            border-radius: 20px;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+        }
+
+        .details-cell {
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .date-cell {
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .crypto-details {
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
+
         @media (max-width: 768px) {
             .crypto-options {
                 grid-template-columns: repeat(2, 1fr);
@@ -324,6 +442,21 @@
             .withdrawal-form {
                 padding: 1.5rem;
             }
+
+            .withdrawals-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .withdrawals-table th,
+            .withdrawals-table td {
+                padding: 0.8rem 1rem;
+                font-size: 0.85rem;
+            }
+            
+            .pending-title {
+                font-size: 1.5rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -334,6 +467,10 @@
             .method-tab {
                 padding: 0.6rem 0.8rem;
                 font-size: 0.9rem;
+            }
+
+            .main-content {
+                padding: 2rem 1rem;
             }
         }
     </style>
@@ -352,7 +489,7 @@
             <div class="method-tabs">
                 <button class="method-tab active" id="crypto-tab">💰 Crypto</button>
                 <button class="method-tab" id="bank-tab">🏦 Bank</button>
-              
+                <button class="method-tab" id="mpesa-tab">📱 M-Pesa</button>
             </div>
             
             <!-- Crypto withdrawal form -->
@@ -427,6 +564,94 @@
                 <button class="withdraw-btn" id="mpesa-withdraw-btn" onclick="processMpesaWithdrawal()">Withdraw</button>
             </div>
         </div>
+
+        <!-- Pending Withdrawals Section -->
+        <div class="pending-withdrawals">
+            <h2 class="pending-title">Pending Withdrawals</h2>
+
+            @php
+
+                $pendingWithdrawals = \App\Models\Withdrawal::where('user_id', auth()->id())
+                ->where('status', 'pending')
+                ->latest()
+                ->get();
+                
+
+            @endphp
+
+          
+            
+            @if(isset($pendingWithdrawals) && $pendingWithdrawals->count() > 0)
+                <table class="withdrawals-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Method</th>
+                            <th>Amount</th>
+                            <th>Address</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($pendingWithdrawals as $withdrawal)
+                            <tr>
+                                <td class="date-cell">
+                                    {{ $withdrawal->created_at->format('M d, Y H:i') }}
+                                </td>
+                                <td>
+                                    <span class="method-badge">
+                                        @if($withdrawal->method == 'crypto')
+                                            Crypto
+                                        @elseif($withdrawal->method == 'bank')
+                                            Bank Transfer
+                                        @elseif($withdrawal->method == 'mpesa')
+                                            M-Pesa
+                                        @else
+                                            {{ ucfirst($withdrawal->method) }}
+                                        @endif
+                                    </span>
+                                </td>
+                                <td class="amount-cell">
+                                    ${{ number_format($withdrawal->amount, 2) }}
+                                </td>
+                                <td class="details-cell">
+                                    @if($withdrawal->method == 'crypto')
+                                        <div class="crypto-details">
+                                            <strong>{{ ucfirst($withdrawal->details['crypto_type'] ?? 'N/A') }}</strong><br>
+                                            {{ Str::limit($withdrawal->details['wallet_address'] ?? '', 20) }}
+                                        </div>
+                                    @elseif($withdrawal->method == 'bank')
+                                        <div class="crypto-details">
+                                            <strong>{{ $withdrawal->details['bank_name'] ?? 'N/A' }}</strong><br>
+                                            Acc: {{ Str::limit($withdrawal->details['account_number'] ?? '', 10) }}
+                                        </div>
+                                    @elseif($withdrawal->method == 'mpesa')
+                                        <div class="crypto-details">
+                                            <strong>M-Pesa</strong><br>
+                                            Phone: {{ $withdrawal->details['phone'] ?? 'N/A' }}
+                                        </div>
+                                    @else
+                                        <div class="crypto-details">
+                                            {{ json_encode($withdrawal->details) }}
+                                        </div>
+                                    @endif
+                                </td>
+                                <td>
+                                    <span class="status-badge status-{{ $withdrawal->status }}">
+                                        {{ ucfirst($withdrawal->status) }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @else
+                <div class="empty-state">
+                    <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">📭</div>
+                    <p>No pending withdrawals found. Submit a withdrawal request above.</p>
+                </div>
+            @endif
+        </div>
     </main>
 
     <script>
@@ -458,7 +683,7 @@
             container.innerHTML = `<div class="${type}-message">${message}</div>`;
             setTimeout(() => {
                 container.innerHTML = '';
-            }, 150000);
+            }, 15000); // Reduced from 150000 to 15000 (15 seconds)
         }
 
         async function processCryptoWithdrawal() {
@@ -479,6 +704,13 @@
 
             if (walletAddress.length < 10) {
                 showMessage('crypto-messages', 'Please enter a valid wallet address', 'error');
+                return;
+            }
+
+            // Check if amount exceeds balance
+            const balance = {{ auth()->user()->wallet_balance }};
+            if (parseFloat(amount) > balance) {
+                showMessage('crypto-messages', 'Insufficient balance', 'error');
                 return;
             }
 
@@ -504,17 +736,14 @@
 
                 if (response.ok) {
                     showMessage('crypto-messages', 'Withdrawal request submitted successfully!', 'success');
-                    // Update balance display
-                    // document.querySelector('.balance-amount').textContent = '$' + result.new_balance;
                     // Clear form
                     document.getElementById('crypto-amount').value = '';
                     document.getElementById('crypto-wallet').value = '';
 
-                    // window.location.reload();
+                    // Reload page after 2 seconds to show updated pending withdrawals
                     setTimeout(() => {
                         window.location.reload();
-            }, 150000);
-
+                    }, 2000);
 
                 } else {
                     showMessage('crypto-messages', result.message || 'Withdrawal failed. Please try again.', 'error');
@@ -551,6 +780,13 @@
                 return;
             }
 
+            // Check if amount exceeds balance
+            const balance = {{ auth()->user()->wallet_balance }};
+            if (parseFloat(amount) > balance) {
+                showMessage('bank-messages', 'Insufficient balance', 'error');
+                return;
+            }
+
             // Show loading state
             withdrawBtn.disabled = true;
             withdrawBtn.innerHTML = '<span class="loading"></span> Processing...';
@@ -575,14 +811,17 @@
 
                 if (response.ok) {
                     showMessage('bank-messages', 'Bank withdrawal request submitted!', 'success');
-                    // Update balance display
-                    document.querySelector('.balance-amount').textContent = '$' + result.new_balance;
                     // Clear form
                     document.getElementById('bank-amount').value = '';
                     document.getElementById('bank-name').value = '';
                     document.getElementById('bank-account').value = '';
                     document.getElementById('bank-holder').value = '';
                     document.getElementById('bank-swift').value = '';
+
+                    // Reload page after 2 seconds to show updated pending withdrawals
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
                 } else {
                     showMessage('bank-messages', result.message || 'Withdrawal failed. Please try again.', 'error');
                 }
@@ -616,6 +855,13 @@
                 return;
             }
 
+            // Check if amount exceeds balance
+            const balance = {{ auth()->user()->wallet_balance }};
+            if (parseFloat(amount) > balance) {
+                showMessage('mpesa-messages', 'Insufficient balance', 'error');
+                return;
+            }
+
             // Show loading state
             withdrawBtn.disabled = true;
             withdrawBtn.innerHTML = '<span class="loading"></span> Processing...';
@@ -637,16 +883,14 @@
 
                 if (response.ok) {
                     showMessage('mpesa-messages', 'M-Pesa withdrawal initiated!', 'success');
-                    // Update balance display
-                    // document.querySelector('.balance-amount').textContent = '$' + result.new_balance;
                     // Clear form
                     document.getElementById('mpesa-amount').value = '';
                     document.getElementById('mpesa-phone').value = '';
 
-                    
+                    // Reload page after 2 seconds to show updated pending withdrawals
                     setTimeout(() => {
                         window.location.reload();
-            }, 150000);
+                    }, 2000);
                 } else {
                     showMessage('mpesa-messages', result.message || 'Withdrawal failed. Please try again.', 'error');
                 }
@@ -665,7 +909,7 @@
             if (value.startsWith('0')) {
                 value = '254' + value.substring(1);
             }
-            e.target.value = value;
+            e.target.value = value.substring(0, 12);
         });
 
         // Tab switching functionality

@@ -6,93 +6,119 @@ use Illuminate\Http\Request;
 use App\Models\Withdrawal;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\WithdrawalRequestMail;
+use Illuminate\Support\Facades\Auth;
 
 class WithdrawalController extends Controller
 {
-    public function cryptoWithdrawal(Request $request)
-    {
-        $request->validate([
-            'crypto_type' => 'required|in:bitcoin,usdt,ethereum',
-            'amount' => 'required|numeric|min:10',
-            'wallet_address' => 'required|string'
+
+    // In your controller
+public function showWithdrawalForm()
+{
+    $pendingWithdrawals = auth()->user()->withdrawals()
+        ->where('status', 'pending')
+        ->latest()
+        ->get();
+    
+    return view('withdraw', compact('pendingWithdrawals'));
+}
+public function cryptoWithdrawal(Request $request)
+{
+    $request->validate([
+        'crypto_type' => 'required|in:bitcoin,usdt,ethereum',
+        'amount' => 'required|numeric|min:10',
+        'wallet_address' => 'required|string'
+    ]);
+
+    return DB::transaction(function () use ($request) {
+        $user = Auth::user();
+        
+        if ($user->wallet_balance < $request->amount) {
+            return response()->json(['message' => 'Insufficient balance'], 400);
+        }
+
+        // Create withdrawal record
+        $withdrawal = Withdrawal::create([
+            'user_id' => $user->id,
+            'method' => 'crypto',
+            'amount' => $request->amount,
+            'status' => 'pending',
+            'details' => [
+                'crypto_type' => $request->crypto_type,
+                'wallet_address' => $request->wallet_address
+            ]
         ]);
 
-        return DB::transaction(function () use ($request) {
-            $user = auth()->user();
-            
-            if ($user->wallet_balance < $request->amount) {
-                return response()->json(['message' => 'Insufficient balance'], 400);
-            }
+        // Deduct from user balance
+        $user->decrement('wallet_balance', $request->amount);
 
-            // Create withdrawal record
-            $withdrawal = Withdrawal::create([
-                'user_id' => $user->id,
-                'method' => 'crypto',
-                'amount' => $request->amount,
-                'status' => 'pending',
-                'details' => [
-                    'crypto_type' => $request->crypto_type,
-                    'wallet_address' => $request->wallet_address
-                ]
-            ]);
+        // Send email notification to user
+        try {
+            Mail::to($user->email)->send(new WithdrawalRequestMail($withdrawal));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send withdrawal email: ' . $e->getMessage());
+            // Don't fail the transaction if email fails
+        }
 
-            // Deduct from user balance
-            $user->decrement('wallet_balance', $request->amount);
+        // In a real app, you might also want to notify the admin
+        // Mail::to(config('app.admin_email'))->send(new AdminWithdrawalNotificationMail($withdrawal));
 
-            // In a real app, you would queue a job to process the crypto transaction
-            // ProcessCryptoWithdrawal::dispatch($withdrawal);
+        return response()->json([
+            'message' => 'Withdrawal request submitted successfully',
+            'balance' => $user->fresh()->wallet_balance
+        ]);
+    });
+}
 
-            return response()->json([
-                'message' => 'Withdrawal request submitted successfully',
-                'balance' => $user->fresh()->wallet_balance
-            ]);
-        });
-    }
+// You should also add for other methods (bank, mpesa)
+public function bankWithdrawal(Request $request)
+{
+    $request->validate([
+        'amount' => 'required|numeric|min:10',
+        'bank_name' => 'required|string',
+        'account_number' => 'required|string',
+        'account_holder' => 'required|string',
+        'swift_code' => 'nullable|string'
+    ]);
 
-    public function bankWithdrawal(Request $request)
-    {
-        $request->validate([
-            'amount' => 'required|numeric|min:10',
-            'bank_name' => 'required|string',
-            'account_number' => 'required|string',
-            'account_holder' => 'required|string',
-            'swift_code' => 'nullable|string'
+    return DB::transaction(function () use ($request) {
+        $user = Auth::user();
+        
+        if ($user->wallet_balance < $request->amount) {
+            return response()->json(['message' => 'Insufficient balance'], 400);
+        }
+
+        $withdrawal = Withdrawal::create([
+            'user_id' => $user->id,
+            'method' => 'bank',
+            'amount' => $request->amount,
+            'status' => 'pending',
+            'details' => [
+                'bank_name' => $request->bank_name,
+                'account_number' => $request->account_number,
+                'account_holder' => $request->account_holder,
+                'swift_code' => $request->swift_code
+            ]
         ]);
 
-        return DB::transaction(function () use ($request) {
-            $user = auth()->user();
-            
-            if ($user->wallet_balance < $request->amount) {
-                return response()->json(['message' => 'Insufficient balance'], 400);
-            }
+        $user->decrement('wallet_balance', $request->amount);
+        
+        // Send email notification
+        try {
+            Mail::to($user->email)->send(new WithdrawalRequestMail($withdrawal));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send withdrawal email: ' . $e->getMessage());
+        }
 
-            // Create withdrawal record
-            $withdrawal = Withdrawal::create([
-                'user_id' => $user->id,
-                'method' => 'bank',
-                'amount' => $request->amount,
-                'status' => 'pending',
-                'details' => [
-                    'bank_name' => $request->bank_name,
-                    'account_number' => $request->account_number,
-                    'account_holder' => $request->account_holder,
-                    'swift_code' => $request->swift_code
-                ]
-            ]);
+        return response()->json([
+            'message' => 'Bank withdrawal request submitted successfully',
+            'balance' => $user->fresh()->wallet_balance
+        ]);
+    });
+}
 
-            // Deduct from user balance
-            $user->decrement('wallet_balance', $request->amount);
-
-            // In a real app, you would queue a job to process the bank transfer
-            // ProcessBankWithdrawal::dispatch($withdrawal);
-
-            return response()->json([
-                'message' => 'Bank withdrawal request submitted',
-                'balance' => $user->fresh()->wallet_balance
-            ]);
-        });
-    }
-
+ 
     public function mpesaWithdrawal(Request $request)
     {
         $request->validate([
