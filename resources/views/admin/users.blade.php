@@ -530,7 +530,7 @@ $('#updateBalanceForm').on('submit', function(e) {
     };
     
     $.ajax({
-        url: '/admin/users/' + currentUserId + '/update-balance',
+        url: '/admin/users/' + currentUserId + '/add-balance',
         method: 'POST',
         data: formData,
         success: function(response) {

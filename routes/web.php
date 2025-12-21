@@ -26,7 +26,7 @@ Route::get('/checker', [PaymentController::class, 'checker']);
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('admin/users', [UserController::class, 'index'])->name('admin.users');
-    Route::post('/users/{user}/add-balance', [UserController::class, 'addBalance'])->name('admin.users.update-balance');
+    Route::post('admin/users/{user}/add-balance', [UserController::class, 'addBalance'])->name('admin.users.update-balance');
     Route::post('/users/{user}/deduct-balance', [UserController::class, 'deductBalance'])->name('admin.users.deduct-balance');
 });
 
